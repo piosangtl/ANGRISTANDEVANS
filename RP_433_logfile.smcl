@@ -1,0 +1,3586 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}\\stustocoiscifs1.student.vuw.ac.nz\users$\piosantris\Documents\RP_433_logfile.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}27 May 2021, 14:40:23
+{txt}
+{com}. 
+. *               Tristan Piosang                 Replication Project                     ECON 433     *
+. 
+. use "H:\usa_00011 (1).dta"
+{txt}
+{com}. 
+. sort serial pernum 
+{txt}
+{com}. 
+. 
+. tab nchild 
+
+     {txt}number of own {c |}
+   children in the {c |}
+         household {c |}      Freq.     Percent        Cum.
+{hline 19}{c +}{hline 35}
+0 children present {c |}{res}  8,528,961       68.23       68.23
+{txt}   1 child present {c |}{res}  1,717,787       13.74       81.97
+{txt}                 2 {c |}{res}  1,434,139       11.47       93.44
+{txt}                 3 {c |}{res}    574,224        4.59       98.03
+{txt}                 4 {c |}{res}    169,403        1.36       99.39
+{txt}                 5 {c |}{res}     50,488        0.40       99.79
+{txt}                 6 {c |}{res}     15,602        0.12       99.92
+{txt}                 7 {c |}{res}      5,944        0.05       99.96
+{txt}                 8 {c |}{res}      2,495        0.02       99.98
+{txt}                9+ {c |}{res}      2,003        0.02      100.00
+{txt}{hline 19}{c +}{hline 35}
+             Total {c |}{res} 12,501,046      100.00
+{txt}
+{com}. tab chborn 
+
+{txt}children ever born {c |}      Freq.     Percent        Cum.
+{hline 19}{c +}{hline 35}
+               n/a {c |}{res}  7,400,661       59.20       59.20
+{txt}       no children {c |}{res}  1,522,231       12.18       71.38
+{txt}           1 child {c |}{res}    788,594        6.31       77.69
+{txt}        2 children {c |}{res}  1,218,197        9.74       87.43
+{txt}                 3 {c |}{res}    770,967        6.17       93.60
+{txt}                 4 {c |}{res}    388,607        3.11       96.71
+{txt}                 5 {c |}{res}    186,514        1.49       98.20
+{txt}                 6 {c |}{res}     95,692        0.77       98.96
+{txt}                 7 {c |}{res}     51,289        0.41       99.37
+{txt}                 8 {c |}{res}     30,610        0.24       99.62
+{txt}                 9 {c |}{res}     18,281        0.15       99.76
+{txt}                10 {c |}{res}     11,960        0.10       99.86
+{txt}                11 {c |}{res}      6,568        0.05       99.91
+{txt}12 (12+ 1960-1990) {c |}{res}     10,875        0.09      100.00
+{txt}{hline 19}{c +}{hline 35}
+             Total {c |}{res} 12,501,046      100.00
+{txt}
+{com}.    
+. /*Make sure value num labels are the same. Recode chborn by combining 0 and 1. 
+> Then use the generated/recoded vars as a restriction to li*/
+. 
+. recode nchild (0=0) (1=1) (2=2) (3=3)(4=4)(5=5)(6=6)(7=7) (8=8) (9=9),gen(nnchild)
+{txt}(0 differences between nchild and nnchild)
+
+{com}. recode chborn (0=0) (1=0) (2=1) (3=2)(4=3)(5=4)(6=5)(7=6) (8=7) (9=8) (10/max=9),gen(cchborn)
+{txt}(5100385 differences between chborn and cchborn)
+
+{com}. 
+. *Generate mom_age 
+. gen eligible_mom=0
+{txt}
+{com}. replace eligible_mom=1 if sex==2 & momloc==0 & cchborn>0
+{txt}(3,452,291 real changes made)
+
+{com}. gen mom_age=age if eligible_mom==1
+{txt}(9,048,755 missing values generated)
+
+{com}. 
+. 
+. *                                                               TABLE 1                                                                         *
+. 
+. **Women aged 21-35
+. gen women2135=. 
+{txt}(12,501,046 missing values generated)
+
+{com}. replace women2135=1 if sex==2 & age >=21 & age <=35
+{txt}(1,505,744 real changes made)
+
+{com}. replace women2135=0 if women2135==.
+{txt}(10,995,302 real changes made)
+
+{com}. tab women2135
+
+  {txt}women2135 {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res} 10,995,302       87.96       87.96
+{txt}          1 {c |}{res}  1,505,744       12.04      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res} 12,501,046      100.00
+{txt}
+{com}. 
+. *Mean child ever born 
+. sum cchborn if women2135==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}cchborn {c |}{res}  1,505,744    1.219013    1.269721          0          9
+{txt}
+{com}. 
+. *Percent with 2 or more children 
+. gen women2135_2more=.
+{txt}(12,501,046 missing values generated)
+
+{com}. replace women2135_2more=1 if women2135==1 & cchborn>1
+{txt}(589,803 real changes made)
+
+{com}. replace women2135_2more=0 if women2135==1 & cchborn <=1
+{txt}(915,941 real changes made)
+
+{com}. tab women2135_2more
+
+{txt}women2135_2 {c |}
+       more {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}    915,941       60.83       60.83
+{txt}          1 {c |}{res}    589,803       39.17      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  1,505,744      100.00
+{txt}
+{com}. 
+. *Percent worked last year
+. tab workedyr if women2135==1
+
+                       {txt}worked last year {c |}      Freq.     Percent        Cum.
+{hline 40}{c +}{hline 35}
+                                     no {c |}{res}    315,612       20.96       20.96
+{txt}                                    yes {c |}{res}  1,190,132       79.04      100.00
+{txt}{hline 40}{c +}{hline 35}
+                                  Total {c |}{res}  1,505,744      100.00
+{txt}
+{com}. 
+. 
+. **Women aged 36-50
+. gen women3650=. 
+{txt}(12,501,046 missing values generated)
+
+{com}. replace women3650=1 if sex==2 & age >=36 & age <=50
+{txt}(1,275,570 real changes made)
+
+{com}. replace women3650=0 if women3650==.
+{txt}(11,225,476 real changes made)
+
+{com}. tab women3650
+
+  {txt}women3650 {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res} 11,225,476       89.80       89.80
+{txt}          1 {c |}{res}  1,275,570       10.20      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res} 12,501,046      100.00
+{txt}
+{com}. 
+. *Mean child ever born
+. sum cchborn if women3650==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}cchborn {c |}{res}  1,275,570    2.184137    1.524964          0          9
+{txt}
+{com}. 
+. *Percent with 2 or more children 
+. gen women3650_2more=.
+{txt}(12,501,046 missing values generated)
+
+{com}. replace women3650_2more=1 if women3650==1 & cchborn>1
+{txt}(892,192 real changes made)
+
+{com}. replace women3650_2more=0 if women3650==1 & cchborn <=1
+{txt}(383,378 real changes made)
+
+{com}. tab women3650_2more
+
+{txt}women3650_2 {c |}
+       more {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}    383,378       30.06       30.06
+{txt}          1 {c |}{res}    892,192       69.94      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  1,275,570      100.00
+{txt}
+{com}. 
+. *Percent worked last year
+. 
+. tab workedyr if women3650==1
+
+                       {txt}worked last year {c |}      Freq.     Percent        Cum.
+{hline 40}{c +}{hline 35}
+                                     no {c |}{res}    275,861       21.63       21.63
+{txt}                                    yes {c |}{res}    999,709       78.37      100.00
+{txt}{hline 40}{c +}{hline 35}
+                                  Total {c |}{res}  1,275,570      100.00
+{txt}
+{com}. 
+. 
+. **Women aged 21-35 with 2 or more children
+. 
+. *Mean child ever born
+. sum cchborn if women2135_2more==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}cchborn {c |}{res}    589,803    2.565112     .884738          2          9
+{txt}
+{com}. 
+. *Percent with 2 or more children 
+. tab women2135_2more
+
+{txt}women2135_2 {c |}
+       more {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}    915,941       60.83       60.83
+{txt}          1 {c |}{res}    589,803       39.17      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  1,505,744      100.00
+{txt}
+{com}. 
+. *Percent worked last year
+. gen women2135_2wrkyr=. 
+{txt}(12,501,046 missing values generated)
+
+{com}. replace women2135_2wrkyr=1 if women2135_2more==1 & workedyr==3
+{txt}(395,995 real changes made)
+
+{com}. replace women2135_2wrkyr=0 if women2135_2more==1 & workedyr==1
+{txt}(193,808 real changes made)
+
+{com}. tab women2135_2wrkyr
+
+{txt}women2135_2 {c |}
+      wrkyr {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}    193,808       32.86       32.86
+{txt}          1 {c |}{res}    395,995       67.14      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}    589,803      100.00
+{txt}
+{com}. 
+. 
+. **Married women aged 21-35 with 2 or more children
+. gen mar2135_2more=. 
+{txt}(12,501,046 missing values generated)
+
+{com}. replace mar2135_2more=1 if women2135==1 & marst==1 & cchborn >=2
+{txt}(439,361 real changes made)
+
+{com}. replace mar2135_2more=0 if women2135==1 & marst>2 & cchborn <2
+{txt}(496,406 real changes made)
+
+{com}. tab mar2135_2more
+
+{txt}mar2135_2mo {c |}
+         re {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}    496,406       53.05       53.05
+{txt}          1 {c |}{res}    439,361       46.95      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}    935,767      100.00
+{txt}
+{com}. 
+. *Mean child ever born 
+. sum cchborn if mar2135_2more==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}cchborn {c |}{res}    439,361    2.522532     .831047          2          9
+{txt}
+{com}. 
+. *Percent with 2 or more children 
+. tab mar2135_2more
+
+{txt}mar2135_2mo {c |}
+         re {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}    496,406       53.05       53.05
+{txt}          1 {c |}{res}    439,361       46.95      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}    935,767      100.00
+{txt}
+{com}. 
+. *Percent workedyr
+. tab  workedyr if mar2135_2more==1
+
+                       {txt}worked last year {c |}      Freq.     Percent        Cum.
+{hline 40}{c +}{hline 35}
+                                     no {c |}{res}    140,994       32.09       32.09
+{txt}                                    yes {c |}{res}    298,367       67.91      100.00
+{txt}{hline 40}{c +}{hline 35}
+                                  Total {c |}{res}    439,361      100.00
+{txt}
+{com}. 
+. 
+. 
+. ***Match kids and mom
+. 
+. gen age1=age
+{txt}
+{com}. tab age1, nolabel
+
+       {txt}age1 {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}    162,420        1.30        1.30
+{txt}          1 {c |}{res}    199,726        1.60        2.90
+{txt}          2 {c |}{res}    192,787        1.54        4.44
+{txt}          3 {c |}{res}    186,759        1.49        5.93
+{txt}          4 {c |}{res}    188,480        1.51        7.44
+{txt}          5 {c |}{res}    188,187        1.51        8.95
+{txt}          6 {c |}{res}    184,031        1.47       10.42
+{txt}          7 {c |}{res}    187,961        1.50       11.92
+{txt}          8 {c |}{res}    181,156        1.45       13.37
+{txt}          9 {c |}{res}    190,351        1.52       14.89
+{txt}         10 {c |}{res}    188,298        1.51       16.40
+{txt}         11 {c |}{res}    180,173        1.44       17.84
+{txt}         12 {c |}{res}    177,112        1.42       19.26
+{txt}         13 {c |}{res}    173,764        1.39       20.65
+{txt}         14 {c |}{res}    169,320        1.35       22.00
+{txt}         15 {c |}{res}    171,841        1.37       23.38
+{txt}         16 {c |}{res}    170,530        1.36       24.74
+{txt}         17 {c |}{res}    174,939        1.40       26.14
+{txt}         18 {c |}{res}    179,937        1.44       27.58
+{txt}         19 {c |}{res}    192,820        1.54       29.12
+{txt}         20 {c |}{res}    184,121        1.47       30.60
+{txt}         21 {c |}{res}    174,935        1.40       31.99
+{txt}         22 {c |}{res}    167,605        1.34       33.34
+{txt}         23 {c |}{res}    172,903        1.38       34.72
+{txt}         24 {c |}{res}    177,159        1.42       36.14
+{txt}         25 {c |}{res}    193,953        1.55       37.69
+{txt}         26 {c |}{res}    197,637        1.58       39.27
+{txt}         27 {c |}{res}    202,198        1.62       40.89
+{txt}         28 {c |}{res}    201,467        1.61       42.50
+{txt}         29 {c |}{res}    214,418        1.72       44.21
+{txt}         30 {c |}{res}    223,715        1.79       46.00
+{txt}         31 {c |}{res}    204,258        1.63       47.64
+{txt}         32 {c |}{res}    217,471        1.74       49.38
+{txt}         33 {c |}{res}    213,312        1.71       51.08
+{txt}         34 {c |}{res}    208,075        1.66       52.75
+{txt}         35 {c |}{res}    212,091        1.70       54.44
+{txt}         36 {c |}{res}    200,876        1.61       56.05
+{txt}         37 {c |}{res}    198,469        1.59       57.64
+{txt}         38 {c |}{res}    188,813        1.51       59.15
+{txt}         39 {c |}{res}    190,944        1.53       60.68
+{txt}         40 {c |}{res}    194,158        1.55       62.23
+{txt}         41 {c |}{res}    173,020        1.38       63.61
+{txt}         42 {c |}{res}    190,634        1.52       65.14
+{txt}         43 {c |}{res}    187,417        1.50       66.64
+{txt}         44 {c |}{res}    139,818        1.12       67.75
+{txt}         45 {c |}{res}    151,229        1.21       68.96
+{txt}         46 {c |}{res}    145,588        1.16       70.13
+{txt}         47 {c |}{res}    149,785        1.20       71.33
+{txt}         48 {c |}{res}    129,890        1.04       72.37
+{txt}         49 {c |}{res}    129,808        1.04       73.40
+{txt}         50 {c |}{res}    126,506        1.01       74.42
+{txt}         51 {c |}{res}    113,006        0.90       75.32
+{txt}         52 {c |}{res}    118,750        0.95       76.27
+{txt}         53 {c |}{res}    112,069        0.90       77.17
+{txt}         54 {c |}{res}    111,087        0.89       78.06
+{txt}         55 {c |}{res}    112,418        0.90       78.95
+{txt}         56 {c |}{res}    105,056        0.84       79.80
+{txt}         57 {c |}{res}    109,117        0.87       80.67
+{txt}         58 {c |}{res}    106,184        0.85       81.52
+{txt}         59 {c |}{res}    113,434        0.91       82.42
+{txt}         60 {c |}{res}    113,833        0.91       83.34
+{txt}         61 {c |}{res}    105,965        0.85       84.18
+{txt}         62 {c |}{res}    115,751        0.93       85.11
+{txt}         63 {c |}{res}    110,496        0.88       85.99
+{txt}         64 {c |}{res}    110,194        0.88       86.87
+{txt}         65 {c |}{res}    114,616        0.92       87.79
+{txt}         66 {c |}{res}    105,672        0.85       88.64
+{txt}         67 {c |}{res}    106,040        0.85       89.48
+{txt}         68 {c |}{res}    104,726        0.84       90.32
+{txt}         69 {c |}{res}    101,979        0.82       91.14
+{txt}         70 {c |}{res}     95,330        0.76       91.90
+{txt}         71 {c |}{res}     85,865        0.69       92.59
+{txt}         72 {c |}{res}     86,264        0.69       93.28
+{txt}         73 {c |}{res}     79,873        0.64       93.92
+{txt}         74 {c |}{res}     76,903        0.62       94.53
+{txt}         75 {c |}{res}     75,411        0.60       95.14
+{txt}         76 {c |}{res}     68,749        0.55       95.69
+{txt}         77 {c |}{res}     65,210        0.52       96.21
+{txt}         78 {c |}{res}     60,017        0.48       96.69
+{txt}         79 {c |}{res}     56,203        0.45       97.14
+{txt}         80 {c |}{res}     51,173        0.41       97.55
+{txt}         81 {c |}{res}     43,634        0.35       97.89
+{txt}         82 {c |}{res}     41,863        0.33       98.23
+{txt}         83 {c |}{res}     36,733        0.29       98.52
+{txt}         84 {c |}{res}     32,281        0.26       98.78
+{txt}         85 {c |}{res}     28,419        0.23       99.01
+{txt}         86 {c |}{res}     23,845        0.19       99.20
+{txt}         87 {c |}{res}     19,806        0.16       99.36
+{txt}         88 {c |}{res}     16,322        0.13       99.49
+{txt}         89 {c |}{res}     15,177        0.12       99.61
+{txt}         90 {c |}{res}     48,710        0.39      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res} 12,501,046      100.00
+{txt}
+{com}. 
+. *make a distinction between kids and other family members
+. gen kid=.
+{txt}(12,501,046 missing values generated)
+
+{com}. by serial: replace kid=1 if pernum>2 & (mom_age-age1)>20
+{txt}(3,970,976 real changes made)
+
+{com}. 
+. *manipulating age so that sorted child sequence appears in descending order
+. gen negage=-age1
+{txt}
+{com}. 
+. *generating child sequence from older to younger
+. sort serial negage
+{txt}
+{com}. by serial: gen chseq=_n-2 if kid!=.
+{txt}(8,530,070 missing values generated)
+
+{com}. 
+. *generating child id (childid=household id+child sequence)
+. gen childid = string(serial)+string(chseq) if kid!=.
+{txt}(8,530,070 missing values generated)
+
+{com}. gen chid = real(childid)
+{txt}(8,606,792 missing values generated)
+
+{com}.  
+. 
+. forv j=1(1)10 {c -(}
+{txt}  2{com}.         gen kid`j'age=.
+{txt}  3{com}.         gen kid`j'sex=.
+{txt}  4{com}.         gen kid`j'pernum=.
+{txt}  5{com}.         loc k=`j'-1
+{txt}  6{com}.         
+.         forv i=1(1)27 {c -(}
+{txt}  7{com}.                 display "kid `j' - `i'"
+{txt}  8{com}.                 if `j' != 1 {c -(}
+{txt}  9{com}.                         replace kid`j'age=age[_n+`i'] if momloc[_n+`i']==pernum & serial[_n+`i']==serial & kid`j'age==. & pernum[_n+`i']>kid`k'pernum
+{txt} 10{com}.                         replace kid`j'sex=sex[_n+`i'] if momloc[_n+`i']==pernum & serial[_n+`i']==serial & kid`j'sex==. & pernum[_n+`i']>kid`k'pernum
+{txt} 11{com}.                         replace kid`j'pernum=pernum[_n+`i'] if momloc[_n+`i']==pernum & serial[_n+`i']==serial & kid`j'pernum==. & pernum[_n+`i']>kid`k'pernum
+{txt} 12{com}.                 {c )-}
+{txt} 13{com}.                 
+.                 if `j' == 1 {c -(}
+{txt} 14{com}.                         replace kid`j'age=age[_n+`i'] if momloc[_n+`i']==pernum & serial[_n+`i']==serial & kid`j'age==. 
+{txt} 15{com}.                         replace kid`j'sex=sex[_n+`i'] if momloc[_n+`i']==pernum & serial[_n+`i']==serial & kid`j'sex==. 
+{txt} 16{com}.                         replace kid`j'pernum=pernum[_n+`i'] if momloc[_n+`i']==pernum & serial[_n+`i']==serial & kid`j'pernum==. 
+{txt} 17{com}.                 {c )-}       
+{txt} 18{com}.         {c )-}
+{txt} 19{com}. {c )-}
+{txt}(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 1 - 1
+(1,706,339 real changes made)
+(1,706,339 real changes made)
+(1,706,339 real changes made)
+kid 1 - 2
+(457,292 real changes made)
+(457,292 real changes made)
+(457,292 real changes made)
+kid 1 - 3
+(33,984 real changes made)
+(33,984 real changes made)
+(33,984 real changes made)
+kid 1 - 4
+(10,365 real changes made)
+(10,365 real changes made)
+(10,365 real changes made)
+kid 1 - 5
+(3,606 real changes made)
+(3,606 real changes made)
+(3,606 real changes made)
+kid 1 - 6
+(1,504 real changes made)
+(1,504 real changes made)
+(1,504 real changes made)
+kid 1 - 7
+(629 real changes made)
+(629 real changes made)
+(629 real changes made)
+kid 1 - 8
+(283 real changes made)
+(283 real changes made)
+(283 real changes made)
+kid 1 - 9
+(113 real changes made)
+(113 real changes made)
+(113 real changes made)
+kid 1 - 10
+(57 real changes made)
+(57 real changes made)
+(57 real changes made)
+kid 1 - 11
+(25 real changes made)
+(25 real changes made)
+(25 real changes made)
+kid 1 - 12
+(9 real changes made)
+(9 real changes made)
+(9 real changes made)
+kid 1 - 13
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 1 - 14
+(6 real changes made)
+(6 real changes made)
+(6 real changes made)
+kid 1 - 15
+(4 real changes made)
+(4 real changes made)
+(4 real changes made)
+kid 1 - 16
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 1 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 2 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 2
+(850,887 real changes made)
+(850,887 real changes made)
+(850,887 real changes made)
+kid 2 - 3
+(239,689 real changes made)
+(239,689 real changes made)
+(239,689 real changes made)
+kid 2 - 4
+(19,311 real changes made)
+(19,311 real changes made)
+(19,311 real changes made)
+kid 2 - 5
+(5,517 real changes made)
+(5,517 real changes made)
+(5,517 real changes made)
+kid 2 - 6
+(2,065 real changes made)
+(2,065 real changes made)
+(2,065 real changes made)
+kid 2 - 7
+(863 real changes made)
+(863 real changes made)
+(863 real changes made)
+kid 2 - 8
+(399 real changes made)
+(399 real changes made)
+(399 real changes made)
+kid 2 - 9
+(178 real changes made)
+(178 real changes made)
+(178 real changes made)
+kid 2 - 10
+(86 real changes made)
+(86 real changes made)
+(86 real changes made)
+kid 2 - 11
+(37 real changes made)
+(37 real changes made)
+(37 real changes made)
+kid 2 - 12
+(16 real changes made)
+(16 real changes made)
+(16 real changes made)
+kid 2 - 13
+(4 real changes made)
+(4 real changes made)
+(4 real changes made)
+kid 2 - 14
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 2 - 15
+(4 real changes made)
+(4 real changes made)
+(4 real changes made)
+kid 2 - 16
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 2 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 20
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 2 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 2 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 3 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 3
+(288,300 real changes made)
+(288,300 real changes made)
+(288,300 real changes made)
+kid 3 - 4
+(82,706 real changes made)
+(82,706 real changes made)
+(82,706 real changes made)
+kid 3 - 5
+(7,808 real changes made)
+(7,808 real changes made)
+(7,808 real changes made)
+kid 3 - 6
+(2,363 real changes made)
+(2,363 real changes made)
+(2,363 real changes made)
+kid 3 - 7
+(941 real changes made)
+(941 real changes made)
+(941 real changes made)
+kid 3 - 8
+(443 real changes made)
+(443 real changes made)
+(443 real changes made)
+kid 3 - 9
+(194 real changes made)
+(194 real changes made)
+(194 real changes made)
+kid 3 - 10
+(83 real changes made)
+(83 real changes made)
+(83 real changes made)
+kid 3 - 11
+(34 real changes made)
+(34 real changes made)
+(34 real changes made)
+kid 3 - 12
+(20 real changes made)
+(20 real changes made)
+(20 real changes made)
+kid 3 - 13
+(12 real changes made)
+(12 real changes made)
+(12 real changes made)
+kid 3 - 14
+(4 real changes made)
+(4 real changes made)
+(4 real changes made)
+kid 3 - 15
+(4 real changes made)
+(4 real changes made)
+(4 real changes made)
+kid 3 - 16
+(2 real changes made)
+(2 real changes made)
+(2 real changes made)
+kid 3 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 3 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 4 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 3
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 4
+(78,758 real changes made)
+(78,758 real changes made)
+(78,758 real changes made)
+kid 4 - 5
+(23,005 real changes made)
+(23,005 real changes made)
+(23,005 real changes made)
+kid 4 - 6
+(2,562 real changes made)
+(2,562 real changes made)
+(2,562 real changes made)
+kid 4 - 7
+(908 real changes made)
+(908 real changes made)
+(908 real changes made)
+kid 4 - 8
+(368 real changes made)
+(368 real changes made)
+(368 real changes made)
+kid 4 - 9
+(182 real changes made)
+(182 real changes made)
+(182 real changes made)
+kid 4 - 10
+(86 real changes made)
+(86 real changes made)
+(86 real changes made)
+kid 4 - 11
+(43 real changes made)
+(43 real changes made)
+(43 real changes made)
+kid 4 - 12
+(17 real changes made)
+(17 real changes made)
+(17 real changes made)
+kid 4 - 13
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 4 - 14
+(6 real changes made)
+(6 real changes made)
+(6 real changes made)
+kid 4 - 15
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 16
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 17
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 4 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 4 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 5 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 3
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 4
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 5
+(21,486 real changes made)
+(21,486 real changes made)
+(21,486 real changes made)
+kid 5 - 6
+(6,270 real changes made)
+(6,270 real changes made)
+(6,270 real changes made)
+kid 5 - 7
+(830 real changes made)
+(830 real changes made)
+(830 real changes made)
+kid 5 - 8
+(324 real changes made)
+(324 real changes made)
+(324 real changes made)
+kid 5 - 9
+(140 real changes made)
+(140 real changes made)
+(140 real changes made)
+kid 5 - 10
+(71 real changes made)
+(71 real changes made)
+(71 real changes made)
+kid 5 - 11
+(18 real changes made)
+(18 real changes made)
+(18 real changes made)
+kid 5 - 12
+(17 real changes made)
+(17 real changes made)
+(17 real changes made)
+kid 5 - 13
+(4 real changes made)
+(4 real changes made)
+(4 real changes made)
+kid 5 - 14
+(6 real changes made)
+(6 real changes made)
+(6 real changes made)
+kid 5 - 15
+(2 real changes made)
+(2 real changes made)
+(2 real changes made)
+kid 5 - 16
+(2 real changes made)
+(2 real changes made)
+(2 real changes made)
+kid 5 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 5 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 6 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 3
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 4
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 5
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 6
+(5,764 real changes made)
+(5,764 real changes made)
+(5,764 real changes made)
+kid 6 - 7
+(1,783 real changes made)
+(1,783 real changes made)
+(1,783 real changes made)
+kid 6 - 8
+(308 real changes made)
+(308 real changes made)
+(308 real changes made)
+kid 6 - 9
+(109 real changes made)
+(109 real changes made)
+(109 real changes made)
+kid 6 - 10
+(39 real changes made)
+(39 real changes made)
+(39 real changes made)
+kid 6 - 11
+(20 real changes made)
+(20 real changes made)
+(20 real changes made)
+kid 6 - 12
+(8 real changes made)
+(8 real changes made)
+(8 real changes made)
+kid 6 - 13
+(4 real changes made)
+(4 real changes made)
+(4 real changes made)
+kid 6 - 14
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 15
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 6 - 16
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 6 - 17
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 6 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 6 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 7 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 3
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 4
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 5
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 6
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 7
+(1,872 real changes made)
+(1,872 real changes made)
+(1,872 real changes made)
+kid 7 - 8
+(632 real changes made)
+(632 real changes made)
+(632 real changes made)
+kid 7 - 9
+(119 real changes made)
+(119 real changes made)
+(119 real changes made)
+kid 7 - 10
+(39 real changes made)
+(39 real changes made)
+(39 real changes made)
+kid 7 - 11
+(13 real changes made)
+(13 real changes made)
+(13 real changes made)
+kid 7 - 12
+(8 real changes made)
+(8 real changes made)
+(8 real changes made)
+kid 7 - 13
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 7 - 14
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 7 - 15
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 7 - 16
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 19
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 7 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 7 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 8 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 3
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 4
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 5
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 6
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 7
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 8
+(739 real changes made)
+(739 real changes made)
+(739 real changes made)
+kid 8 - 9
+(245 real changes made)
+(245 real changes made)
+(245 real changes made)
+kid 8 - 10
+(50 real changes made)
+(50 real changes made)
+(50 real changes made)
+kid 8 - 11
+(17 real changes made)
+(17 real changes made)
+(17 real changes made)
+kid 8 - 12
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 8 - 13
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 8 - 14
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 8 - 15
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 16
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 8 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 9 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 3
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 4
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 5
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 6
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 7
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 8
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 9
+(293 real changes made)
+(293 real changes made)
+(293 real changes made)
+kid 9 - 10
+(113 real changes made)
+(113 real changes made)
+(113 real changes made)
+kid 9 - 11
+(16 real changes made)
+(16 real changes made)
+(16 real changes made)
+kid 9 - 12
+(5 real changes made)
+(5 real changes made)
+(5 real changes made)
+kid 9 - 13
+(3 real changes made)
+(3 real changes made)
+(3 real changes made)
+kid 9 - 14
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 15
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 9 - 16
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 9 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+(12,501,046 missing values generated)
+kid 10 - 1
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 2
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 3
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 4
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 5
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 6
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 7
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 8
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 9
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 10
+(108 real changes made)
+(108 real changes made)
+(108 real changes made)
+kid 10 - 11
+(50 real changes made)
+(50 real changes made)
+(50 real changes made)
+kid 10 - 12
+(8 real changes made)
+(8 real changes made)
+(8 real changes made)
+kid 10 - 13
+(1 real change made)
+(1 real change made)
+(1 real change made)
+kid 10 - 14
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 15
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 16
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 17
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 18
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 19
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 20
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 21
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 22
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 23
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 24
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 25
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 26
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+kid 10 - 27
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+{com}. 
+. 
+. sort serial pernum
+{txt}
+{com}. 
+. **Generate the final subsample (twomore_g1, i.e. age group 1( or g1=21-35 with 2 or more kids and kid1's age<18))
+. 
+. gen twomore_g1=0
+{txt}
+{com}. replace twomore_g1=1 if pernum==momloc[_n+1] & sex==2 & cchborn==nnchild & cchborn>=2 & momloc==0 & mom_age >=21 & mom_age <=35 & kid2age >=1 & kid1age<18
+{txt}(385,835 real changes made)
+
+{com}. 
+. 
+. *Generate mom age groups
+. gen mom_g1=1 if mom_age >=21 & mom_age <=35 & kid2age >=1
+{txt}(11,690,963 missing values generated)
+
+{com}. replace mom_g1=0 if mom_g1==. 
+{txt}(11,690,963 real changes made)
+
+{com}. 
+. gen mom_g2=1 if mom_age >=36 & mom_age <=50
+{txt}(11,446,070 missing values generated)
+
+{com}. replace mom_g2=0 if mom_g2==. 
+{txt}(11,446,070 real changes made)
+
+{com}. 
+. 
+. 
+. 
+.  
+. 
+. *                                                                       TABLE 2                                                                 *
+. 
+. 
+. *Child ever born 
+. sum cchborn if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}cchborn {c |}{res}    385,835    2.506849    .7769257          2          9
+{txt}
+{com}. sum cchborn if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}cchborn {c |}{res}    314,972    2.490294    .7570745          2          9
+{txt}
+{com}. 
+. *More than 2 children 
+. gen morethan2=.
+{txt}(12,501,046 missing values generated)
+
+{com}. replace morethan2=1 if twomore_g1==1 & cchborn>2
+{txt}(145,511 real changes made)
+
+{com}. replace morethan2=0 if morethan2==. & twomore_g1==1 & cchborn <=2
+{txt}(240,324 real changes made)
+
+{com}. 
+. sum morethan2
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 3}morethan2 {c |}{res}    385,835    .3771327    .4846692          0          1
+{txt}
+{com}. sum morethan2 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 3}morethan2 {c |}{res}    314,972    .3706202    .4829717          0          1
+{txt}
+{com}. 
+. 
+. **generate Boy1st(first child was a boy)
+. gen boy1=.
+{txt}(12,501,046 missing values generated)
+
+{com}. replace boy1=1 if kid1sex==1 & twomore_g1==1
+{txt}(197,466 real changes made)
+
+{com}. replace boy1=0 if boy1==. & twomore_g1==1
+{txt}(188,369 real changes made)
+
+{com}. sum boy1 if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}boy1 {c |}{res}    385,835    .5117887    .4998617          0          1
+{txt}
+{com}. sum boy1 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}boy1 {c |}{res}    314,972    .5132583     .499825          0          1
+{txt}
+{com}. 
+. *Boy2nd (second child was a boy)
+. gen boy2=. 
+{txt}(12,501,046 missing values generated)
+
+{com}. replace boy2=1 if kid2sex==1 & twomore_g1==1
+{txt}(187,155 real changes made)
+
+{com}. replace boy2=0 if boy2==. & twomore_g1==1
+{txt}(198,680 real changes made)
+
+{com}. sum boy2 if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}boy2 {c |}{res}    385,835    .4850649    .4997775          0          1
+{txt}
+{com}. sum boy2 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}boy2 {c |}{res}    314,972    .4894594    .4998897          0          1
+{txt}
+{com}. 
+. *Twoboys (first two children were boys)
+. gen twoboys=1 if kid1sex==1 & kid2sex==1 & twomore_g1==1
+{txt}(12,404,432 missing values generated)
+
+{com}. replace twoboys=0 if twoboys==. & twomore_g1==1
+{txt}(289,221 real changes made)
+
+{com}. sum twoboys if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}twoboys {c |}{res}    385,835    .2504024    .4332453          0          1
+{txt}
+{com}. sum twoboys if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}twoboys {c |}{res}    314,972    .2529209    .4346867          0          1
+{txt}
+{com}. 
+. 
+. *Twogirls (first two children were girls)
+. gen twogirls=1 if kid1sex==2 & kid2sex==2 & twomore_g1==1
+{txt}(12,412,625 missing values generated)
+
+{com}. replace twogirls=0 if twogirls==. & twomore_g1==1
+{txt}(297,414 real changes made)
+
+{com}. sum twogirls if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}twogirls {c |}{res}    385,835    .2291679     .420298          0          1
+{txt}
+{com}. sum twogirls if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}twogirls {c |}{res}    314,972      .22896    .4201641          0          1
+{txt}
+{com}. 
+. 
+. *samesex1n2 (first two children were the same sex)
+. gen samesex1n2=1 if kid1sex==kid2sex & twomore_g1==1
+{txt}(12,316,011 missing values generated)
+
+{com}. replace samesex1n2=0 if samesex1n2==. & twomore_g1==1
+{txt}(200,800 real changes made)
+
+{com}. sum samesex1n2 if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}samesex1n2 {c |}{res}    385,835    .4795703    .4995831          0          1
+{txt}
+{com}. sum samesex1n2 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}samesex1n2 {c |}{res}    314,972    .4818809    .4996724          0          1
+{txt}
+{com}. 
+. *twins2 (if second birth was a twin)
+. gen twins2=1 if kid2age==kid3age & twomore_g1==1
+{txt}(12,479,962 missing values generated)
+
+{com}. replace twins2=0 if twins2==. & twomore_g1==1
+{txt}(364,751 real changes made)
+
+{com}. sum twins2 if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}twins2 {c |}{res}    385,835    .0546451    .2272865          0          1
+{txt}
+{com}. sum twins2 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}twins2 {c |}{res}    314,972    .0475249     .212759          0          1
+{txt}
+{com}. 
+. *generate age of eldest kid
+. egen max_kid_age=rowmax(kid*age)
+{txt}(10,286,827 missing values generated)
+
+{com}. 
+. *age
+. sum mom_age if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}mom_age {c |}{res}    385,835    30.46753     3.44021         21         35
+{txt}
+{com}. sum mom_age if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}mom_age {c |}{res}    314,972    30.65397    3.337449         21         35
+{txt}
+{com}. 
+. *age at first birth 
+. gen mom_ageat1st= mom_age-max_kid_age if twomore_g1==1
+{txt}(12,115,211 missing values generated)
+
+{com}. sum mom_ageat1st if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+mom_ageat1st {c |}{res}    385,835    21.65004    3.511768          5         35
+{txt}
+{com}. sum mom_ageat1st if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+mom_ageat1st {c |}{res}    314,972    22.03657     3.49892          5         35
+{txt}
+{com}. 
+. 
+. *Worked for pay 
+. 
+. gen worked4pay=0
+{txt}
+{com}. replace worked4pay=1 if uhrswork>0 & incwage>0 & twomore_g1==1
+{txt}(241,414 real changes made)
+
+{com}. sum worked4pay if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}worked4pay {c |}{res}    385,835    .6256923    .4839443          0          1
+{txt}
+{com}. sum worked4pay if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}worked4pay {c |}{res}    314,972    .6235221    .4845029          0          1
+{txt}
+{com}. 
+. *Weeks worked last year
+. sum wkswork1 if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}wkswork1 {c |}{res}    385,835     26.4549    22.83957          0         52
+{txt}
+{com}. sum wkswork1 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}wkswork1 {c |}{res}    314,972    26.58374    22.78617          0         52
+{txt}
+{com}. 
+. *Hours per week 
+. sum uhrswork if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}uhrswork {c |}{res}    385,835    22.80968    19.05624          0         99
+{txt}
+{com}. sum uhrswork if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}uhrswork {c |}{res}    314,972    22.45521     18.8414          0         99
+{txt}
+{com}. 
+. *labor/personal income a year prior to census. In 1995 USD assuming 18.72% (~~1.19) total inflation.  
+. gen incwage_1995usd= incwage*1.19 if twomore_g1==1
+{txt}(12,115,211 missing values generated)
+
+{com}. sum incwage_1995usd if twomore_g1==1  
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+incwage_19~d {c |}{res}    385,835    8664.466    11956.91          0   235464.1
+{txt}
+{com}. sum incwage_1995usd if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+incwage_19~d {c |}{res}    314,972    8622.721    12000.86          0   235464.1
+{txt}
+{com}. 
+. *family income a year prior to census
+. gen ftotinc_1995usd= ftotinc*1.19 if twomore_g1==1
+{txt}(12,115,211 missing values generated)
+
+{com}. sum ftotinc_1995usd if twomore_g1==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+ftotinc_19~d {c |}{res}    385,835    40376.89    32421.97  -25700.43   804156.8
+{txt}
+{com}. sum ftotinc_1995usd if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+ftotinc_19~d {c |}{res}    314,972    46250.88    32461.59  -25700.43   804156.8
+{txt}
+{com}. 
+. *non-wife income(family income minus wife's labour income)
+. gen nonwife_inc= ftotinc_1995usd-incwage_1995usd if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1  
+{txt}(12,186,074 missing values generated)
+
+{com}. sum nonwife_inc if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}nonwife_inc {c |}{res}    314,972    37628.16    30103.12  -25700.43   572156.8
+{txt}
+{com}. 
+. 
+. 
+. ***Gen father's data and put to mom. First, sort to original. 
+. 
+. sort serial pernum 
+{txt}
+{com}. 
+. gen husage=. 
+{txt}(12,501,046 missing values generated)
+
+{com}. replace husage= age[_n-1] if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1]  & marst==1 
+{txt}(314,972 real changes made)
+
+{com}. 
+. gen huspernum=. 
+{txt}(12,501,046 missing values generated)
+
+{com}. replace huspernum= pernum[_n-1] if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+{txt}(314,972 real changes made)
+
+{com}. 
+. gen husworkedyr=0 if twomore_g1==1 & pernum==sploc[_n-1] & serial==serial[_n-1] & marst==1 
+{txt}(12,186,074 missing values generated)
+
+{com}. replace husworkedyr=1 if uhrswork[_n-1]>0 & pernum==sploc[_n-1] & serial==serial[_n-1] &twomore_g1==1 & marst==1 
+{txt}(306,216 real changes made)
+
+{com}. 
+. gen huswkswork1=.
+{txt}(12,501,046 missing values generated)
+
+{com}. replace huswkswork1= wkswork1[_n-1] if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+{txt}(314,972 real changes made)
+
+{com}. 
+. gen husuhrswork=.
+{txt}(12,501,046 missing values generated)
+
+{com}. replace husuhrswork= uhrswork[_n-1] if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+{txt}(314,972 real changes made)
+
+{com}. 
+. gen husincwage=incwage[_n-1] if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1]
+{txt}(12,184,332 missing values generated)
+
+{com}. gen husincwage_1995usd= husincwage*1.19 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 
+{txt}(12,186,074 missing values generated)
+
+{com}. 
+. 
+. *husband's age 
+. 
+. sum husage 
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}husage {c |}{res}    314,972    33.40201    4.888405         15         90
+{txt}
+{com}. 
+. *husband's age at first birth
+. 
+. gen husageat1st= husage-kid1age 
+{txt}(12,186,074 missing values generated)
+
+{com}. sum husageat1st
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}husageat1st {c |}{res}    314,972    24.78461    4.889512          2         80
+{txt}
+{com}. 
+. 
+. *husband Worked for pay 
+. sum husworkedyr
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}husworkedyr {c |}{res}    314,972    .9722007    .1643976          0          1
+{txt}
+{com}. 
+. *husband weeks worked last year
+. 
+. sum huswkswork1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}huswkswork1 {c |}{res}    314,972    47.35067    11.58091          0         52
+{txt}
+{com}. 
+. *husband Hours per week 
+. 
+. sum husuhrswork
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 1}husuhrswork {c |}{res}    314,972    44.38992    13.15075          0         99
+{txt}
+{com}. 
+. *husband labor/personal income a year prior to census 
+. 
+. sum husincwage_1995usd
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+husincwage~d {c |}{res}    314,972    31832.83    26989.34          0    1189999
+{txt}
+{com}. 
+. 
+. 
+. 
+. *                                                               TABLE 3                                                                         *
+. 
+. ***All women -sex of first child with one or more children 
+. 
+. **Generate group for all eligible women
+. gen allwomT3=0
+{txt}
+{com}. replace allwomT3=1 if eligible_mom==1 & cchborn >=1 & mom_age>=21 & mom_age<=35 & momloc[_n+1]==pernum & cchborn==nchild
+{txt}(648,963 real changes made)
+
+{com}. 
+. *fraction of sample
+. gen onegirl=0 if allwomT3==1
+{txt}(11,852,083 missing values generated)
+
+{com}. replace onegirl=1 if allwomT3==1 & kid1sex==2
+{txt}(317,305 real changes made)
+
+{com}. sum onegirl
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}onegirl {c |}{res}    648,963    .4889416    .4998781          0          1
+{txt}
+{com}. 
+. gen oneboy=0 if allwomT3==1
+{txt}(11,852,083 missing values generated)
+
+{com}. replace oneboy=1 if allwomT3==1 & kid1sex==1
+{txt}(331,628 real changes made)
+
+{com}. sum oneboy
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}oneboy {c |}{res}    648,963    .5110122    .4998791          0          1
+{txt}
+{com}. 
+. ttest oneboy==onegirl, unp
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+Variable{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+  oneboy {c |}{res}{col 12}648,963{col 22} .5110122{col 34} .0006205{col 46} .4998791{col 58}  .509796{col 70} .5122284
+ {txt}onegirl {c |}{res}{col 12}648,963{col 22} .4889416{col 34} .0006205{col 46} .4998781{col 58} .4877254{col 70} .4901578
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}1297926{col 22} .4999769{col 34} .0004389{col 46} .5000002{col 58} .4991167{col 70} .5008371
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0220706{col 34} .0008775{col 58} .0203506{col 70} .0237906
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}oneboy{txt}) - mean({res}onegirl{txt})                           t = {res} 25.1504
+{txt}Ho: diff = 0                                     degrees of freedom = {res} 1.3e+06
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+{txt}
+{com}. 
+. *fraction that had another child 
+. 
+. gen anochildgirl=0 if onegirl==1
+{txt}(12,183,741 missing values generated)
+
+{com}. replace anochildgirl=1 if onegirl==1 & cchborn>1
+{txt}(207,072 real changes made)
+
+{com}. reg anochildgirl onegirl
+{txt}note: onegirl omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   317,305
+{txt}{hline 13}{c +}{hline 34}   F(0, 317304)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res}  71937.624   317,304   .22671515   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res}  71937.624   317,304   .22671515   {txt}Root MSE        =   {res} .47615
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}anochildgirl{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}onegirl {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .6525961{col 26}{space 2} .0008453{col 37}{space 1}  772.05{col 46}{space 3}0.000{col 54}{space 4} .6509394{col 67}{space 3} .6542528
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. gen anochildboy=0 if oneboy==1
+{txt}(12,169,418 missing values generated)
+
+{com}. replace anochildboy=1 if oneboy==1 & cchborn>1
+{txt}(217,652 real changes made)
+
+{com}. reg anochildboy oneboy
+{txt}note: oneboy omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   331,628
+{txt}{hline 13}{c +}{hline 34}   F(0, 331627)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 74804.0104   331,627  .225566707   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 74804.0104   331,627  .225566707   {txt}Root MSE        =   {res} .47494
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1} anochildboy{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}oneboy {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .6563137{col 26}{space 2} .0008247{col 37}{space 1}  795.79{col 46}{space 3}0.000{col 54}{space 4} .6546973{col 67}{space 3} .6579301
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. ttest anochildboy==anochildgirl, unp
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+Variable{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+anochi~y {c |}{res}{col 12}331,628{col 22} .6563137{col 34} .0008247{col 46} .4749386{col 58} .6546973{col 70} .6579301
+{txt}anochi~l {c |}{res}{col 12}317,305{col 22} .6525961{col 34} .0008453{col 46} .4761461{col 58} .6509394{col 70} .6542528
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}648,933{col 22} .6544959{col 34} .0005903{col 46} .4755327{col 58} .6533389{col 70} .6556529
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0037176{col 34} .0011809{col 58} .0014031{col 70} .0060321
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}anochildboy{txt}) - mean({res}anochildgirl{txt})                 t = {res}  3.1481
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  648931
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.9992         {txt}Pr(|T| > |t|) = {res}0.0016          {txt}Pr(T > t) = {res}0.0008
+{txt}
+{com}. 
+. ***Married women- sex of first child with one or more children 
+. 
+. gen marallwomT3=0 
+{txt}
+{com}. replace marallwomT3=1 if pernum==momloc[_n+1] & sex==2 & cchborn==nnchild & cchborn>=1 & momloc==0 & mom_age >=21 & mom_age <=35 & kid1age >=1 &marst==1
+{txt}(488,914 real changes made)
+
+{com}. 
+. 
+. *fraction of sample 
+. gen onegirlmar=0 if marallwomT3==1
+{txt}(12,012,132 missing values generated)
+
+{com}. replace onegirlmar=1 if marallwomT3==1 & kid1sex==2
+{txt}(238,180 real changes made)
+
+{com}. sum onegirlmar
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}onegirlmar {c |}{res}    488,914    .4871613    .4998357          0          1
+{txt}
+{com}. 
+. gen oneboymar=0 if marallwomT3==1 
+{txt}(12,012,132 missing values generated)
+
+{com}. replace oneboymar=1 if marallwomT3==1 & kid1sex==1 
+{txt}(250,704 real changes made)
+
+{com}. sum oneboymar
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 3}oneboymar {c |}{res}    488,914    .5127773    .4998372          0          1
+{txt}
+{com}. 
+. *fraction that had another child 
+. gen mar_anogirl=0 if onegirlmar==1
+{txt}(12,262,866 missing values generated)
+
+{com}. replace mar_anogirl=1 if onegirlmar==1 & cchborn>1 
+{txt}(169,481 real changes made)
+
+{com}. reg mar_anogirl onegirlmar
+{txt}note: onegirlmar omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   238,180
+{txt}{hline 13}{c +}{hline 34}   F(0, 238179)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 48883.9332   238,179  .205240316   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 48883.9332   238,179  .205240316   {txt}Root MSE        =   {res} .45303
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1} mar_anogirl{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 2}onegirlmar {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .7115669{col 26}{space 2} .0009283{col 37}{space 1}  766.54{col 46}{space 3}0.000{col 54}{space 4} .7097475{col 67}{space 3} .7133863
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. gen mar_anoboy=0 if oneboymar==1 
+{txt}(12,250,342 missing values generated)
+
+{com}. replace mar_anoboy=1 if oneboymar==1 & cchborn>1
+{txt}(179,217 real changes made)
+
+{com}. reg mar_anoboy oneboymar
+{txt}note: oneboymar omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   250,704
+{txt}{hline 13}{c +}{hline 34}   F(0, 250703)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 51102.8371   250,703  .203838156   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 51102.8371   250,703  .203838156   {txt}Root MSE        =   {res} .45148
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  mar_anoboy{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}oneboymar {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2}  .714855{col 26}{space 2} .0009017{col 37}{space 1}  792.79{col 46}{space 3}0.000{col 54}{space 4} .7130877{col 67}{space 3} .7166223
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. ttest mar_anoboy==mar_anogirl, unp
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+Variable{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+mar_an~y {c |}{res}{col 12}250,704{col 22}  .714855{col 34} .0009017{col 46} .4514844{col 58} .7130877{col 70} .7166223
+{txt}mar_an~l {c |}{res}{col 12}238,180{col 22} .7115669{col 34} .0009283{col 46} .4530346{col 58} .7097475{col 70} .7133863
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}488,884{col 22}  .713253{col 34} .0006468{col 46} .4522428{col 58} .7119853{col 70} .7145207
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0032881{col 34}  .001294{col 58} .0007519{col 70} .0058243
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}mar_anoboy{txt}) - mean({res}mar_anogirl{txt})                   t = {res}  2.5410
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  488882
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.9945         {txt}Pr(|T| > |t|) = {res}0.0111          {txt}Pr(T > t) = {res}0.0055
+{txt}
+{com}. 
+. 
+. ***Married women-sex of the first TWO children with two or more children 
+. 
+. **All women (twomore_g1)
+. 
+. *One boy, one girl
+. 
+. gen boygirl=0 if twomore_g1==1
+{txt}(12,115,211 missing values generated)
+
+{com}. replace boygirl=1 if twomore_g1==1 & kid1sex != kid2sex
+{txt}(200,800 real changes made)
+
+{com}. sum boygirl
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}boygirl {c |}{res}    385,835    .5204297    .4995831          0          1
+{txt}
+{com}. 
+. gen morechi_bg=0 if twomore_g1==1 & boygirl==1
+{txt}(12,300,246 missing values generated)
+
+{com}. replace morechi_bg=1 if twomore_g1==1 & boygirl==1 & cchborn>2
+{txt}(68,344 real changes made)
+
+{com}. reg morechi_bg boygirl
+{txt}note: boygirl omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   200,800
+{txt}{hline 13}{c +}{hline 34}   F(0, 200799)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 45082.5342   200,799  .224515731   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 45082.5342   200,799  .224515731   {txt}Root MSE        =   {res} .47383
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  morechi_bg{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}boygirl {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .3403586{col 26}{space 2} .0010574{col 37}{space 1}  321.88{col 46}{space 3}0.000{col 54}{space 4} .3382861{col 67}{space 3} .3424311
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Two girls
+. 
+. sum twogirls if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}twogirls {c |}{res}    385,835    .2291679     .420298          0          1
+{txt}
+{com}. 
+. gen more2girls=0 if twomore_g1==1 & twogirls==1
+{txt}(12,412,625 missing values generated)
+
+{com}. replace more2girls=1 if twomore_g1==1 & twogirls==1 & cchborn>2
+{txt}(37,373 real changes made)
+
+{com}. reg more2girls twogirls
+{txt}note: twogirls omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}    88,421
+{txt}{hline 13}{c +}{hline 34}   F(0, 88420)     = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 21576.5135    88,420  .244022999   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 21576.5135    88,420  .244022999   {txt}Root MSE        =   {res} .49399
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  more2girls{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}twogirls {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .4226711{col 26}{space 2} .0016613{col 37}{space 1}  254.43{col 46}{space 3}0.000{col 54}{space 4}  .419415{col 67}{space 3} .4259271
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Two boys
+. 
+. sum twoboys if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}twoboys {c |}{res}    385,835    .2504024    .4332453          0          1
+{txt}
+{com}. 
+. gen more2boys=0 if twomore_g1==1 & twoboys==1
+{txt}(12,404,432 missing values generated)
+
+{com}. replace more2boys=1 if twomore_g1==1 & twoboys==1 & cchborn>2
+{txt}(39,794 real changes made)
+
+{com}. reg more2boys twoboys
+{txt}note: twoboys omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}    96,614
+{txt}{hline 13}{c +}{hline 34}   F(0, 96613)     = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 23403.3896    96,613  .242238514   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 23403.3896    96,613  .242238514   {txt}Root MSE        =   {res} .49218
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}   more2boys{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}twoboys {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .4118865{col 26}{space 2} .0015834{col 37}{space 1}  260.12{col 46}{space 3}0.000{col 54}{space 4}  .408783{col 67}{space 3}   .41499
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *both same sex
+. 
+. sum samesex1n2 if twomore_g1==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}samesex1n2 {c |}{res}    385,835    .4795703    .4995831          0          1
+{txt}
+{com}. 
+. gen moresamesex=0 if twomore_g1==1 & samesex1n2==1
+{txt}(12,316,011 missing values generated)
+
+{com}. replace moresamesex=1 if twomore_g1==1 & samesex1n2==1 & cchborn>2
+{txt}(77,167 real changes made)
+
+{com}. reg moresamesex samesex1n2
+{txt}note: samesex1n2 omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   185,035
+{txt}{hline 13}{c +}{hline 34}   F(0, 185034)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 44985.2728   185,034  .243118956   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 44985.2728   185,034  .243118956   {txt}Root MSE        =   {res} .49307
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1} moresamesex{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 2}samesex1n2 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2}   .41704{col 26}{space 2} .0011463{col 37}{space 1}  363.83{col 46}{space 3}0.000{col 54}{space 4} .4147934{col 67}{space 3} .4192867
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. ttest moresamesex==morechi_bg, unp
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+Variable{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+moresa~x {c |}{res}{col 12}185,035{col 22}   .41704{col 34} .0011463{col 46} .4930709{col 58} .4147934{col 70} .4192867
+{txt}morech~g {c |}{res}{col 12}200,800{col 22} .3403586{col 34} .0010574{col 46} .4738309{col 58} .3382861{col 70} .3424311
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} .3771327{col 34} .0007803{col 46} .4846692{col 58} .3756034{col 70}  .378662
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0766815{col 34}  .001557{col 58} .0736299{col 70}  .079733
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}moresamesex{txt}) - mean({res}morechi_bg{txt})                   t = {res} 49.2508
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+{txt}
+{com}. 
+. 
+. **Married women 
+. 
+. *One boy, one girl
+. 
+. gen mboygirl=0 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(12,186,074 missing values generated)
+
+{com}. replace mboygirl=1 if twomore_g1==1 & kid1sex != kid2sex & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(163,193 real changes made)
+
+{com}. sum mboygirl
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}mboygirl {c |}{res}    314,972    .5181191    .4996724          0          1
+{txt}
+{com}. 
+. gen m_morechi_bg=0 if twomore_g1==1 & mboygirl==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(12,337,853 missing values generated)
+
+{com}. replace m_morechi_bg=1 if twomore_g1==1 & mboygirl==1 & cchborn>2 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(54,253 real changes made)
+
+{com}. reg m_morechi_bg mboygirl
+{txt}note: mboygirl omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   163,193
+{txt}{hline 13}{c +}{hline 34}   F(0, 163192)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 36216.7606   163,192  .221927304   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 36216.7606   163,192  .221927304   {txt}Root MSE        =   {res} .47109
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}m_morechi_bg{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}mboygirl {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .3324469{col 26}{space 2} .0011662{col 37}{space 1}  285.08{col 46}{space 3}0.000{col 54}{space 4} .3301612{col 67}{space 3} .3347325
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. *Two girls
+. 
+. sum twogirls if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}twogirls {c |}{res}    314,972      .22896    .4201641          0          1
+{txt}
+{com}. 
+. gen m_more2girls=0 if twomore_g1==1 & twogirls==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(12,428,930 missing values generated)
+
+{com}. replace m_more2girls=1 if twomore_g1==1 & twogirls==1 & cchborn>2 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(30,167 real changes made)
+
+{com}. reg m_more2girls twogirls 
+{txt}note: twogirls omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}    72,116
+{txt}{hline 13}{c +}{hline 34}   F(0, 72115)     = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res}  17547.777    72,115  .243330472   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res}  17547.777    72,115  .243330472   {txt}Root MSE        =   {res} .49329
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}m_more2girls{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}twogirls {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .4183122{col 26}{space 2} .0018369{col 37}{space 1}  227.73{col 46}{space 3}0.000{col 54}{space 4} .4147119{col 67}{space 3} .4219125
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Two boys
+. 
+. sum twoboys if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 5}twoboys {c |}{res}    314,972    .2529209    .4346867          0          1
+{txt}
+{com}. 
+. gen m_more2boys=0 if twomore_g1==1 & twoboys==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(12,421,383 missing values generated)
+
+{com}. replace m_more2boys=1 if twomore_g1==1 & twoboys==1 & cchborn>2 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(32,315 real changes made)
+
+{com}. reg m_more2boys twoboys
+{txt}note: twoboys omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}    79,663
+{txt}{hline 13}{c +}{hline 34}   F(0, 79662)     = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 19206.5403    79,662  .241100403   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 19206.5403    79,662  .241100403   {txt}Root MSE        =   {res} .49102
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1} m_more2boys{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}twoboys {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .4056463{col 26}{space 2} .0017397{col 37}{space 1}  233.17{col 46}{space 3}0.000{col 54}{space 4} .4022365{col 67}{space 3} .4090561
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *Both same sex
+. 
+. sum samesex1n2 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}samesex1n2 {c |}{res}    314,972    .4818809    .4996724          0          1
+{txt}
+{com}. 
+. gen m_moresamesex=0 if twomore_g1==1 & samesex1n2==1 & pernum== sploc[_n-1] & serial==serial[_n-1] & marst==1
+{txt}(12,349,267 missing values generated)
+
+{com}. replace m_moresamesex=1 if twomore_g1==1 & samesex1n2==1 & cchborn>2 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1
+{txt}(62,482 real changes made)
+
+{com}. reg m_moresamesex samesex1n2
+{txt}note: samesex1n2 omitted because of collinearity
+
+      Source {c |}       SS           df       MS      Number of obs   ={res}   151,779
+{txt}{hline 13}{c +}{hline 34}   F(0, 151778)    = {res}     0.00
+{txt}       Model {c |} {res}          0         0           .   {txt}Prob > F        ={res}         .
+{txt}    Residual {c |} {res} 36760.3895   151,778  .242198405   {txt}R-squared       ={res}    0.0000
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0000
+{txt}       Total {c |} {res} 36760.3895   151,778  .242198405   {txt}Root MSE        =   {res} .49214
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}m_moresame~x{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 2}samesex1n2 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} .4116643{col 26}{space 2} .0012632{col 37}{space 1}  325.88{col 46}{space 3}0.000{col 54}{space 4} .4091884{col 67}{space 3} .4141402
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. ttest m_moresamesex==m_morechi_bg, unp
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+Variable{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+m_more~x {c |}{res}{col 12}151,779{col 22} .4116643{col 34} .0012632{col 46} .4921366{col 58} .4091884{col 70} .4141402
+{txt}m_more~g {c |}{res}{col 12}163,193{col 22} .3324469{col 34} .0011662{col 46} .4710916{col 58} .3301612{col 70} .3347325
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}314,972{col 22} .3706202{col 34} .0008606{col 46} .4829717{col 58} .3689336{col 70} .3723069
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0792175{col 34} .0017165{col 58} .0758532{col 70} .0825817
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}m_moresamesex{txt}) - mean({res}m_morechi_bg{txt})               t = {res} 46.1512
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  314970
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+{txt}
+{com}. 
+. 
+. ****TABLE 4
+. 
+. ***Compare the demog characteristics of people who have same-sex 
+. 
+. **Generate race groups+ yrs of education var
+. 
+. gen white=0 
+{txt}
+{com}. replace white=1 if race==1
+{txt}(10,270,311 real changes made)
+
+{com}. 
+. gen black=0
+{txt}
+{com}. replace black=1 if race==2 
+{txt}(1,303,446 real changes made)
+
+{com}. 
+. gen hispanic=0
+{txt}
+{com}. replace hispanic=1 if hispan==1 | hispan==2 | hispan==3 | hispan==4
+{txt}(1,054,609 real changes made)
+
+{com}. 
+. gen other_race=0
+{txt}
+{com}. replace other_race=1 if race==3 | race==4 | race==5 | race==6 | race==7      
+{txt}(927,289 real changes made)
+
+{com}. 
+. gen yrs_educ=.
+{txt}(12,501,046 missing values generated)
+
+{com}. replace yrs_educ=0 if educ==0
+{txt}(1,034,290 real changes made)
+
+{com}. replace yrs_educ=4 if educ==1
+{txt}(1,290,745 real changes made)
+
+{com}. replace yrs_educ=8 if educ==2
+{txt}(1,394,195 real changes made)
+
+{com}. replace yrs_educ=9 if educ==3
+{txt}(456,255 real changes made)
+
+{com}. replace yrs_edu=10 if educ==4
+{txt}(545,296 real changes made)
+
+{com}. replace yrs_edu=11 if educ==5
+{txt}(493,914 real changes made)
+
+{com}. replace yrs_edu=12 if educ==6
+{txt}(3,243,116 real changes made)
+
+{com}. replace yrs_edu=13 if educ==7
+{txt}(1,853,289 real changes made)
+
+{com}. replace yrs_edu=14 if educ==8
+{txt}(546,914 real changes made)
+
+{com}. replace yrs_edu=16 if educ==9
+{txt}(0 real changes made)
+
+{com}. replace yrs_edu=17 if educ==10
+{txt}(1,083,394 real changes made)
+
+{com}.    
+. 
+. foreach y in "ttest" {c -(}
+{txt}  2{com}.     `y' age, by(samesex1n2)
+{txt}  3{com}.         `y' mom_ageat1st, by(samesex1n2)
+{txt}  4{com}.         `y' black, by(samesex1n2)
+{txt}  5{com}.         `y' white, by(samesex1n2)
+{txt}  6{com}.         `y' hispanic, by(samesex1n2)
+{txt}  7{com}.         `y' other_race, by(samesex1n2)
+{txt}  8{com}.         `y' yrs_educ, by(samesex1n2)
+{txt}  9{com}. {c )-}
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} 30.43047{col 34} .0077257{col 46} 3.461954{col 58} 30.41533{col 70} 30.44561
+       {txt}1 {c |}{res}{col 12}185,035{col 22} 30.50775{col 34} .0079413{col 46} 3.416011{col 58} 30.49218{col 70} 30.52331
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} 30.46753{col 34} .0055384{col 46}  3.44021{col 58} 30.45667{col 70} 30.47838
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22}-.0772791{col 34} .0110854{col 58} -.099006{col 70}-.0555521
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res} -6.9713
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}1.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} 21.62884{col 34} .0078618{col 46} 3.522935{col 58} 21.61344{col 70} 21.64425
+       {txt}1 {c |}{res}{col 12}185,035{col 22} 21.67305{col 34} .0081353{col 46} 3.499474{col 58} 21.65711{col 70}   21.689
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} 21.65004{col 34} .0056536{col 46} 3.511768{col 58} 21.63896{col 70} 21.66113
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22}-.0442064{col 34} .0113164{col 58}-.0663863{col 70}-.0220265
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res} -3.9064
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.0000         {txt}Pr(|T| > |t|) = {res}0.0001          {txt}Pr(T > t) = {res}1.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} .1063247{col 34} .0006879{col 46} .3082535{col 58} .1049764{col 70}  .107673
+       {txt}1 {c |}{res}{col 12}185,035{col 22} .1007323{col 34} .0006997{col 46} .3009747{col 58} .0993609{col 70} .1021037
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} .1036427{col 34} .0004907{col 46} .3047969{col 58}  .102681{col 70} .1046045
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0055924{col 34} .0009822{col 58} .0036674{col 70} .0075174
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}  5.6940
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} .8112251{col 34} .0008733{col 46} .3913307{col 58} .8095135{col 70} .8129367
+       {txt}1 {c |}{res}{col 12}185,035{col 22} .8176237{col 34} .0008977{col 46} .3861554{col 58} .8158642{col 70} .8193832
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} .8142937{col 34}  .000626{col 46}   .38887{col 58} .8130667{col 70} .8155207
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22}-.0063986{col 34} .0012531{col 58}-.0088546{col 70}-.0039426
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res} -5.1063
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}1.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} .1009462{col 34} .0006723{col 46} .3012582{col 58} .0996285{col 70} .1022639
+       {txt}1 {c |}{res}{col 12}185,035{col 22} .0999865{col 34} .0006974{col 46} .2999828{col 58} .0986196{col 70} .1013533
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22}  .100486{col 34}  .000484{col 46} .3006472{col 58} .0995373{col 70} .1014346
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0009597{col 34} .0009688{col 58}-.0009392{col 70} .0028586
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}  0.9906
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.8391         {txt}Pr(|T| > |t|) = {res}0.3219          {txt}Pr(T > t) = {res}0.1609
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} .0824502{col 34} .0006138{col 46} .2750501{col 58} .0812472{col 70} .0836532
+       {txt}1 {c |}{res}{col 12}185,035{col 22}  .081644{col 34} .0006366{col 46} .2738223{col 58} .0803964{col 70} .0828917
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} .0820636{col 34} .0004419{col 46} .2744619{col 58} .0811976{col 70} .0829296
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0008062{col 34} .0008845{col 58}-.0009273{col 70} .0025397
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}  0.9115
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.8190         {txt}Pr(|T| > |t|) = {res}0.3620          {txt}Pr(T > t) = {res}0.1810
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}196,232{col 22} 12.40105{col 34} .0049701{col 46} 2.201658{col 58}  12.3913{col 70} 12.41079
+       {txt}1 {c |}{res}{col 12}180,825{col 22} 12.43292{col 34} .0051838{col 46}  2.20434{col 58} 12.42276{col 70} 12.44308
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}377,057{col 22} 12.41633{col 34} .0035877{col 46}    2.203{col 58}  12.4093{col 70} 12.42336
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22}-.0318756{col 34} .0071811{col 58}-.0459504{col 70}-.0178008
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res} -4.4388
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  377055
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}1.0000
+{txt}
+{com}. 
+. 
+. ****TABLE 5
+. 
+. gen lnftotinc= ln(ftotinc_1995usd) if eligible_mom==1
+{txt}(12,119,641 missing values generated)
+
+{com}. 
+. foreach y in "ttest" {c -(}
+{txt}  2{com}.     `y' morethan2, by(samesex1n2)
+{txt}  3{com}.         `y' cchborn, by(samesex1n2)
+{txt}  4{com}.         `y' worked4pay, by(samesex1n2)
+{txt}  5{com}.         `y' wkswork1, by(samesex1n2)
+{txt}  6{com}.         `y' uhrswork, by(samesex1n2)
+{txt}  7{com}.         `y' incwage, by(samesex1n2)
+{txt}  8{com}.         `y' lnftotinc, by(samesex1n2)
+{txt}  9{com}. {c )-}
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} .3403586{col 34} .0010574{col 46} .4738309{col 58} .3382861{col 70} .3424311
+       {txt}1 {c |}{res}{col 12}185,035{col 22}   .41704{col 34} .0011463{col 46} .4930709{col 58} .4147934{col 70} .4192867
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} .3771327{col 34} .0007803{col 46} .4846692{col 58} .3756034{col 70}  .378662
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22}-.0766815{col 34}  .001557{col 58} -.079733{col 70}-.0736299
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}-49.2508
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}1.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} 2.457724{col 34} .0016884{col 46} .7565968{col 58} 2.454415{col 70} 2.461033
+       {txt}1 {c |}{res}{col 12}185,035{col 22} 2.560159{col 34} .0018481{col 46} .7949761{col 58} 2.556537{col 70} 2.563781
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} 2.506849{col 34} .0012508{col 46} .7769257{col 58} 2.504397{col 70}   2.5093
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22}-.1024348{col 34} .0024982{col 58}-.1073312{col 70}-.0975384
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}-41.0034
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}1.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} .6303386{col 34} .0010772{col 46} .4827142{col 58} .6282273{col 70}   .63245
+       {txt}1 {c |}{res}{col 12}185,035{col 22} .6206501{col 34}  .001128{col 46} .4852266{col 58} .6184393{col 70}  .622861
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} .6256923{col 34} .0007791{col 46} .4839443{col 58} .6241653{col 70} .6272193
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .0096885{col 34} .0015594{col 58} .0066321{col 70} .0127449
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}  6.2128
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} 26.67413{col 34} .0509327{col 46} 22.82329{col 58} 26.57431{col 70} 26.77396
+       {txt}1 {c |}{res}{col 12}185,035{col 22}   26.217{col 34} .0531316{col 46} 22.85492{col 58} 26.11286{col 70} 26.32113
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22}  26.4549{col 34} .0367695{col 46} 22.83957{col 58} 26.38284{col 70} 26.52697
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .4571367{col 34} .0735968{col 58} .3128892{col 70} .6013842
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}  6.2114
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} 23.01706{col 34} .0424876{col 46} 19.03898{col 58} 22.93378{col 70} 23.10033
+       {txt}1 {c |}{res}{col 12}185,035{col 22} 22.58462{col 34} .0443383{col 46} 19.07245{col 58} 22.49772{col 70} 22.67153
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} 22.80968{col 34} .0306787{col 46} 19.05624{col 58} 22.74955{col 70}  22.8698
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} .4324322{col 34} .0614047{col 58} .3120808{col 70} .5527837
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}  7.0423
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}200,800{col 22} 7374.378{col 34} 22.57027{col 46}  10113.9{col 58} 7330.141{col 70} 7418.615
+       {txt}1 {c |}{res}{col 12}185,035{col 22}   7179.8{col 34} 23.18843{col 46} 9974.665{col 58} 7134.351{col 70} 7225.248
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}385,835{col 22} 7281.064{col 34}   16.176{col 46} 10047.82{col 58} 7249.359{col 70} 7312.768
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22} 194.5782{col 34} 32.37757{col 58} 131.1191{col 70} 258.0373
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res}  6.0097
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  385833
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}1.0000         {txt}Pr(|T| > |t|) = {res}0.0000          {txt}Pr(T > t) = {res}0.0000
+
+{txt}Two-sample t test with equal variances
+{hline 9}{c TT}{hline 68}
+   Group{col 10}{c |}{col 16}Obs{col 27}Mean{col 35}Std. Err.{col 47}Std. Dev.{col 59}[95% Conf. Interval]
+{hline 9}{c +}{hline 68}
+       0 {c |}{res}{col 12}198,438{col 22} 10.30192{col 34} .0020704{col 46} .9222675{col 58} 10.29786{col 70} 10.30597
+       {txt}1 {c |}{res}{col 12}182,967{col 22} 10.31078{col 34} .0021458{col 46} .9178651{col 58} 10.30657{col 70} 10.31498
+{txt}{hline 9}{c +}{hline 68}
+combined {c |}{res}{col 12}381,405{col 22} 10.30617{col 34}   .00149{col 46} .9201676{col 58} 10.30325{col 70} 10.30909
+{txt}{hline 9}{c +}{hline 68}
+    diff {c |}{res}{col 22}-.0088596{col 34} .0029823{col 58}-.0147049{col 70}-.0030143
+{txt}{hline 9}{c BT}{hline 68}
+    diff = mean({res}0{txt}) - mean({res}1{txt})                                      t = {res} -2.9707
+{txt}Ho: diff = 0                                     degrees of freedom = {res}  381403
+
+    {txt}Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = {res}0.0015         {txt}Pr(|T| > |t|) = {res}0.0030          {txt}Pr(T > t) = {res}0.9985
+{txt}
+{com}. 
+. *Using samesex1n2 as instrument
+. 
+. ivregress 2sls worked4pay (morethan2=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     39.29
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0176
+{txt}{col 51}Root MSE{col 67}=    {res} .47966
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-.1263473{col 26}{space 2} .0201573{col 37}{space 1}   -6.27{col 46}{space 3}0.000{col 54}{space 4} -.165855{col 67}{space 3}-.0868397
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}  .673342{col 26}{space 2} .0076411{col 37}{space 1}   88.12{col 46}{space 3}0.000{col 54}{space 4} .6583658{col 67}{space 3} .6883183
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls wkswork1 (morethan2=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     39.47
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0227
+{txt}{col 51}Root MSE{col 67}=    {res} 22.579
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-5.961503{col 26}{space 2} .9488532{col 37}{space 1}   -6.28{col 46}{space 3}0.000{col 54}{space 4}-7.821221{col 67}{space 3}-4.101785
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 28.70318{col 26}{space 2}  .359685{col 37}{space 1}   79.80{col 46}{space 3}0.000{col 54}{space 4} 27.99821{col 67}{space 3} 29.40815
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls uhrswork (morethan2=samesex1n2) 
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     50.42
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0164
+{txt}{col 51}Root MSE{col 67}=    {res} 18.899
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    uhrswork{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-5.639333{col 26}{space 2} .7942207{col 37}{space 1}   -7.10{col 46}{space 3}0.000{col 54}{space 4}-7.195977{col 67}{space 3}-4.082689
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 24.93645{col 26}{space 2} .3010679{col 37}{space 1}   82.83{col 46}{space 3}0.000{col 54}{space 4} 24.34637{col 67}{space 3} 25.52653
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls incwage (morethan2=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     36.85
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0199
+{txt}{col 51}Root MSE{col 67}=    {res} 9947.1
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     incwage{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-2537.487{col 26}{space 2} 418.0217{col 37}{space 1}   -6.07{col 46}{space 3}0.000{col 54}{space 4}-3356.794{col 67}{space 3}-1718.179
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 8238.033{col 26}{space 2} 158.4609{col 37}{space 1}   51.99{col 46}{space 3}0.000{col 54}{space 4} 7927.456{col 67}{space 3} 8548.611
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls lnftotinc (morethan2=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   381,405
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}      8.69
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0032
+{txt}{col 1}{col 51}R-squared{col 67}= {res}         .
+{txt}{col 51}Root MSE{col 67}=    {res} .92753
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}   lnftotinc{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2} .1155776{col 26}{space 2} .0392177{col 37}{space 1}    2.95{col 46}{space 3}0.003{col 54}{space 4} .0387123{col 67}{space 3} .1924429
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 10.26271{col 26}{space 2} .0148226{col 37}{space 1}  692.37{col 46}{space 3}0.000{col 54}{space 4} 10.23366{col 67}{space 3} 10.29176
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. 
+. *Using number of children as instrument
+. 
+. ivregress 2sls worked4pay (cchborn=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     39.53
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0237
+{txt}{col 51}Root MSE{col 67}=    {res} .47818
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}cchborn {c |}{col 14}{res}{space 2}-.0945821{col 26}{space 2} .0150431{col 37}{space 1}   -6.29{col 46}{space 3}0.000{col 54}{space 4}-.1240661{col 67}{space 3}-.0650981
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .8627954{col 26}{space 2} .0377187{col 37}{space 1}   22.87{col 46}{space 3}0.000{col 54}{space 4} .7888681{col 67}{space 3} .9367226
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}cchborn{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls wkswork1 (cchborn=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     39.72
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0289
+{txt}{col 51}Root MSE{col 67}=    {res} 22.507
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}cchborn {c |}{col 14}{res}{space 2}-4.462709{col 26}{space 2} .7080578{col 37}{space 1}   -6.30{col 46}{space 3}0.000{col 54}{space 4}-5.850477{col 67}{space 3}-3.074942
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 37.64224{col 26}{space 2} 1.775364{col 37}{space 1}   21.20{col 46}{space 3}0.000{col 54}{space 4} 34.16259{col 67}{space 3} 41.12189
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}cchborn{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls uhrswork (cchborn=samesex1n2) 
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     50.61
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0202
+{txt}{col 51}Root MSE{col 67}=    {res} 18.863
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    uhrswork{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}cchborn {c |}{col 14}{res}{space 2}-4.221537{col 26}{space 2} .5934119{col 37}{space 1}   -7.11{col 46}{space 3}0.000{col 54}{space 4}-5.384603{col 67}{space 3}-3.058471
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 33.39243{col 26}{space 2} 1.487904{col 37}{space 1}   22.44{col 46}{space 3}0.000{col 54}{space 4} 30.47619{col 67}{space 3} 36.30867
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}cchborn{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls incwage (cchborn=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   385,835
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}     36.96
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0230
+{txt}{col 51}Root MSE{col 67}=    {res} 9931.8
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     incwage{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}cchborn {c |}{col 14}{res}{space 2}-1899.532{col 26}{space 2} 312.4427{col 37}{space 1}   -6.08{col 46}{space 3}0.000{col 54}{space 4}-2511.909{col 67}{space 3}-1287.156
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}  12042.9{col 26}{space 2} 783.4098{col 37}{space 1}   15.37{col 46}{space 3}0.000{col 54}{space 4} 10507.45{col 67}{space 3} 13578.36
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}cchborn{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. gen ln_ftotinc= ln(ftotinc_1995usd) if twomore_g1==1 
+{txt}(12,119,641 missing values generated)
+
+{com}. ivregress 2sls ln_ftotinc (cchborn=samesex1n2)
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   381,405
+{txt}{col 1}{col 51}Wald chi2({res}1{txt}){col 67}= {res}      8.62
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0033
+{txt}{col 1}{col 51}R-squared{col 67}= {res}         .
+{txt}{col 51}Root MSE{col 67}=    {res} .93098
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  ln_ftotinc{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}cchborn {c |}{col 14}{res}{space 2} .0864373{col 26}{space 2} .0294389{col 37}{space 1}    2.94{col 46}{space 3}0.003{col 54}{space 4} .0287382{col 67}{space 3} .1441364
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}  10.0897{col 26}{space 2} .0737399{col 37}{space 1}  136.83{col 46}{space 3}0.000{col 54}{space 4} 9.945171{col 67}{space 3} 10.23423
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}cchborn{p_end}
+{p 0 15 100}Instruments:{space 3}samesex1n2{p_end}
+
+{com}. 
+. 
+. ****TABLE 10 
+.  
+. ssc install egenmore
+{txt}checking {hilite:egenmore} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. xtile husearn_3= husincwage_1995usd, nq(3)
+{txt}
+{com}. tab husearn_3
+
+{txt}3 quantiles {c |}
+         of {c |}
+husincwage_ {c |}
+    1995usd {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          1 {c |}{res}    109,798       34.86       34.86
+{txt}          2 {c |}{res}    100,674       31.96       66.82
+{txt}          3 {c |}{res}    104,500       33.18      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}    314,972      100.00
+{txt}
+{com}. 
+. gen bottom3rd= 0
+{txt}
+{com}. replace bottom3rd=1 if husearn_3==1 
+{txt}(109,798 real changes made)
+
+{com}. 
+. gen middle3rd=0
+{txt}
+{com}. replace middle3rd=1 if husearn_3==2
+{txt}(100,674 real changes made)
+
+{com}. 
+. gen top3rd=0
+{txt}
+{com}. replace top3rd=1 if husearn_3==3
+{txt}(104,500 real changes made)
+
+{com}. 
+. gen race_grp=0
+{txt}
+{com}. replace race_grp=1 if white==1
+{txt}(10,270,311 real changes made)
+
+{com}. replace race_grp=2 if black==1
+{txt}(1,303,446 real changes made)
+
+{com}. replace race_grp=3 if hispanic==1
+{txt}(1,054,609 real changes made)
+
+{com}. replace race_grp=4 if other_race==1
+{txt}(927,289 real changes made)
+
+{com}. 
+. 
+. *First stage
+. 
+. foreach y in "reg" {c -(}
+{txt}  2{com}.         `y' morethan2 samesex1n2 mom_age mom_ageat1st i.kid1sex i.kid2sex i.race_grp if pernum== sploc[_n-1] & serial== serial[_n-1] & bottom3rd ==1 & marst==1
+{txt}  3{com}.         `y' morethan2 samesex1n2 mom_age mom_ageat1st i.kid1sex i.kid2sex i.race_grp if pernum== sploc[_n-1] & serial== serial[_n-1] & middle3rd==1 & marst==1
+{txt}  4{com}.         `y' morethan2 samesex1n2 mom_age mom_ageat1st i.kid1sex i.kid2sex i.race_grp if pernum== sploc[_n-1] & serial== serial[_n-1] & top3rd==1 & marst==1
+{txt}  5{com}.         
+. {c )-}
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   104,405
+{txt}{hline 13}{c +}{hline 34}   F(8, 104396)    = {res}  1364.05
+{txt}       Model {c |} {res} 2408.25928         8   301.03241   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 23039.1053   104,396  .220689541   {txt}R-squared       ={res}    0.0946
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0946
+{txt}       Total {c |} {res} 25447.3646   104,404  .243739364   {txt}Root MSE        =   {res} .46978
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}   morethan2{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 2}samesex1n2 {c |}{col 14}{res}{space 2}  .059466{col 26}{space 2} .0029097{col 37}{space 1}   20.44{col 46}{space 3}0.000{col 54}{space 4}  .053763{col 67}{space 3}  .065169
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0286889{col 26}{space 2} .0004443{col 37}{space 1}   64.56{col 46}{space 3}0.000{col 54}{space 4}  .027818{col 67}{space 3} .0295599
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0438759{col 26}{space 2} .0004864{col 37}{space 1}  -90.20{col 46}{space 3}0.000{col 54}{space 4}-.0448292{col 67}{space 3}-.0429225
+{txt}{space 3}2.kid1sex {c |}{col 14}{res}{space 2} .0110274{col 26}{space 2} .0029096{col 37}{space 1}    3.79{col 46}{space 3}0.000{col 54}{space 4} .0053246{col 67}{space 3} .0167302
+{txt}{space 3}2.kid2sex {c |}{col 14}{res}{space 2} .0059164{col 26}{space 2} .0029096{col 37}{space 1}    2.03{col 46}{space 3}0.042{col 54}{space 4} .0002136{col 67}{space 3} .0116192
+{txt}{space 12} {c |}
+{space 4}race_grp {c |}
+{space 10}2  {c |}{col 14}{res}{space 2} .0605795{col 26}{space 2} .0056917{col 37}{space 1}   10.64{col 46}{space 3}0.000{col 54}{space 4} .0494238{col 67}{space 3} .0717352
+{txt}{space 10}3  {c |}{col 14}{res}{space 2} .1078818{col 26}{space 2} .0056704{col 37}{space 1}   19.03{col 46}{space 3}0.000{col 54}{space 4} .0967678{col 67}{space 3} .1189957
+{txt}{space 10}4  {c |}{col 14}{res}{space 2} .1199532{col 26}{space 2} .0046108{col 37}{space 1}   26.02{col 46}{space 3}0.000{col 54}{space 4} .1109161{col 67}{space 3} .1289903
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .4259715{col 26}{space 2} .0133874{col 37}{space 1}   31.82{col 46}{space 3}0.000{col 54}{space 4} .3997324{col 67}{space 3} .4522105
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}    96,455
+{txt}{hline 13}{c +}{hline 34}   F(8, 96446)     = {res}  1008.79
+{txt}       Model {c |} {res} 1707.77556         8  213.471945   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 20409.0561    96,446  .211611223   {txt}R-squared       ={res}    0.0772
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0771
+{txt}       Total {c |} {res} 22116.8316    96,454  .229299268   {txt}Root MSE        =   {res} .46001
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}   morethan2{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 2}samesex1n2 {c |}{col 14}{res}{space 2} .0685935{col 26}{space 2} .0029644{col 37}{space 1}   23.14{col 46}{space 3}0.000{col 54}{space 4} .0627833{col 67}{space 3} .0744037
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0257521{col 26}{space 2} .0004901{col 37}{space 1}   52.54{col 46}{space 3}0.000{col 54}{space 4} .0247915{col 67}{space 3} .0267127
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0391143{col 26}{space 2} .0004898{col 37}{space 1}  -79.86{col 46}{space 3}0.000{col 54}{space 4}-.0400743{col 67}{space 3}-.0381543
+{txt}{space 3}2.kid1sex {c |}{col 14}{res}{space 2} .0118115{col 26}{space 2} .0029645{col 37}{space 1}    3.98{col 46}{space 3}0.000{col 54}{space 4} .0060012{col 67}{space 3} .0176219
+{txt}{space 3}2.kid2sex {c |}{col 14}{res}{space 2} .0027456{col 26}{space 2} .0029644{col 37}{space 1}    0.93{col 46}{space 3}0.354{col 54}{space 4}-.0030647{col 67}{space 3} .0085559
+{txt}{space 12} {c |}
+{space 4}race_grp {c |}
+{space 10}2  {c |}{col 14}{res}{space 2} .0334049{col 26}{space 2} .0066576{col 37}{space 1}    5.02{col 46}{space 3}0.000{col 54}{space 4} .0203562{col 67}{space 3} .0464537
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}  .086267{col 26}{space 2} .0074102{col 37}{space 1}   11.64{col 46}{space 3}0.000{col 54}{space 4} .0717432{col 67}{space 3} .1007908
+{txt}{space 10}4  {c |}{col 14}{res}{space 2} .0837479{col 26}{space 2}  .005901{col 37}{space 1}   14.19{col 46}{space 3}0.000{col 54}{space 4}  .072182{col 67}{space 3} .0953138
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .3701369{col 26}{space 2} .0150345{col 37}{space 1}   24.62{col 46}{space 3}0.000{col 54}{space 4} .3406694{col 67}{space 3} .3996043
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   100,909
+{txt}{hline 13}{c +}{hline 34}   F(8, 100900)    = {res}   972.93
+{txt}       Model {c |} {res}   1657.446         8   207.18075   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 21486.0999   100,900  .212944498   {txt}R-squared       ={res}    0.0716
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0715
+{txt}       Total {c |} {res} 23143.5459   100,908  .229352934   {txt}Root MSE        =   {res} .46146
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}   morethan2{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 2}samesex1n2 {c |}{col 14}{res}{space 2}  .069174{col 26}{space 2} .0029073{col 37}{space 1}   23.79{col 46}{space 3}0.000{col 54}{space 4} .0634756{col 67}{space 3} .0748723
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0271536{col 26}{space 2} .0005605{col 37}{space 1}   48.45{col 46}{space 3}0.000{col 54}{space 4} .0260551{col 67}{space 3} .0282522
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0372852{col 26}{space 2} .0004519{col 37}{space 1}  -82.51{col 46}{space 3}0.000{col 54}{space 4} -.038171{col 67}{space 3}-.0363995
+{txt}{space 3}2.kid1sex {c |}{col 14}{res}{space 2} .0078831{col 26}{space 2} .0029074{col 37}{space 1}    2.71{col 46}{space 3}0.007{col 54}{space 4} .0021847{col 67}{space 3} .0135815
+{txt}{space 3}2.kid2sex {c |}{col 14}{res}{space 2}-.0050865{col 26}{space 2} .0029073{col 37}{space 1}   -1.75{col 46}{space 3}0.080{col 54}{space 4}-.0107848{col 67}{space 3} .0006118
+{txt}{space 12} {c |}
+{space 4}race_grp {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-.0231887{col 26}{space 2} .0086354{col 37}{space 1}   -2.69{col 46}{space 3}0.007{col 54}{space 4}-.0401139{col 67}{space 3}-.0062634
+{txt}{space 10}3  {c |}{col 14}{res}{space 2} .0218744{col 26}{space 2} .0081746{col 37}{space 1}    2.68{col 46}{space 3}0.007{col 54}{space 4} .0058523{col 67}{space 3} .0378965
+{txt}{space 10}4  {c |}{col 14}{res}{space 2}-.0112926{col 26}{space 2}  .006473{col 37}{space 1}   -1.74{col 46}{space 3}0.081{col 54}{space 4}-.0239796{col 67}{space 3} .0013944
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .3303688{col 26}{space 2} .0171307{col 37}{space 1}   19.29{col 46}{space 3}0.000{col 54}{space 4} .2967929{col 67}{space 3} .3639446
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. *Mean of dependent variable: worked for pay
+. 
+. sum worked4pay if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & bottom3rd ==1 & marst==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}worked4pay {c |}{res}    109,798     .610084    .4877332          0          1
+{txt}
+{com}. 
+. sum worked4pay if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & middle3rd ==1 & marst==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}worked4pay {c |}{res}    100,674    .6874267    .4635443          0          1
+{txt}
+{com}. 
+. sum worked4pay if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & top3rd ==1 & marst==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 2}worked4pay {c |}{res}    104,500    .5760766    .4941808          0          1
+{txt}
+{com}. 
+. *OLS: worked for pay
+. 
+. reg worked4pay morethan2 mom_age mom_ageat1st boy1 boy2 black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & bottom3rd==1 & marst==1
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   109,798
+{txt}{hline 13}{c +}{hline 34}   F(8, 109789)    = {res}   529.99
+{txt}       Model {c |} {res} 971.172068         8  121.396508   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res}  25147.743   109,789  .229055215   {txt}R-squared       ={res}    0.0372
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0371
+{txt}       Total {c |} {res}  26118.915   109,797  .237883686   {txt}Root MSE        =   {res}  .4786
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-.1532073{col 26}{space 2} .0030768{col 37}{space 1}  -49.79{col 46}{space 3}0.000{col 54}{space 4}-.1592378{col 67}{space 3}-.1471769
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0143005{col 26}{space 2} .0004477{col 37}{space 1}   31.94{col 46}{space 3}0.000{col 54}{space 4} .0134231{col 67}{space 3}  .015178
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0124529{col 26}{space 2} .0004992{col 37}{space 1}  -24.95{col 46}{space 3}0.000{col 54}{space 4}-.0134314{col 67}{space 3}-.0114745
+{txt}{space 8}boy1 {c |}{col 14}{res}{space 2}-.0008084{col 26}{space 2} .0028901{col 37}{space 1}   -0.28{col 46}{space 3}0.780{col 54}{space 4}-.0064729{col 67}{space 3} .0048561
+{txt}{space 8}boy2 {c |}{col 14}{res}{space 2} .0027049{col 26}{space 2}  .002891{col 37}{space 1}    0.94{col 46}{space 3}0.349{col 54}{space 4}-.0029614{col 67}{space 3} .0083713
+{txt}{space 7}black {c |}{col 14}{res}{space 2} .1336332{col 26}{space 2} .0054889{col 37}{space 1}   24.35{col 46}{space 3}0.000{col 54}{space 4}  .122875{col 67}{space 3} .1443914
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-.0534494{col 26}{space 2}  .004754{col 37}{space 1}  -11.24{col 46}{space 3}0.000{col 54}{space 4}-.0627672{col 67}{space 3}-.0441315
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-.0351157{col 26}{space 2} .0052264{col 37}{space 1}   -6.72{col 46}{space 3}0.000{col 54}{space 4}-.0453593{col 67}{space 3}-.0248721
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .5091297{col 26}{space 2} .0132401{col 37}{space 1}   38.45{col 46}{space 3}0.000{col 54}{space 4} .4831793{col 67}{space 3} .5350802
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. reg worked4pay morethan2 mom_age mom_ageat1st boy1 boy2 black hispanic other_race if pernum== sploc[_n-1] & serial== serial[_n-1] & middle3rd==1 & marst==1
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   100,674
+{txt}{hline 13}{c +}{hline 34}   F(8, 100665)    = {res}   475.09
+{txt}       Model {c |} {res} 787.020377         8  98.3775471   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 20844.9244   100,665  .207072214   {txt}R-squared       ={res}    0.0364
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0363
+{txt}       Total {c |} {res} 21631.9448   100,673   .21487335   {txt}Root MSE        =   {res} .45505
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-.1431797{col 26}{space 2} .0031225{col 37}{space 1}  -45.85{col 46}{space 3}0.000{col 54}{space 4}-.1492998{col 67}{space 3}-.1370597
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0188236{col 26}{space 2}  .000479{col 37}{space 1}   39.30{col 46}{space 3}0.000{col 54}{space 4} .0178847{col 67}{space 3} .0197625
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0113122{col 26}{space 2} .0004863{col 37}{space 1}  -23.26{col 46}{space 3}0.000{col 54}{space 4}-.0122653{col 67}{space 3}-.0103591
+{txt}{space 8}boy1 {c |}{col 14}{res}{space 2}-.0030339{col 26}{space 2} .0028697{col 37}{space 1}   -1.06{col 46}{space 3}0.290{col 54}{space 4}-.0086585{col 67}{space 3} .0025907
+{txt}{space 8}boy2 {c |}{col 14}{res}{space 2} .0003742{col 26}{space 2} .0028698{col 37}{space 1}    0.13{col 46}{space 3}0.896{col 54}{space 4}-.0052506{col 67}{space 3}  .005999
+{txt}{space 7}black {c |}{col 14}{res}{space 2} .1284349{col 26}{space 2} .0062805{col 37}{space 1}   20.45{col 46}{space 3}0.000{col 54}{space 4} .1161252{col 67}{space 3} .1407446
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-.0547836{col 26}{space 2} .0060437{col 37}{space 1}   -9.06{col 46}{space 3}0.000{col 54}{space 4}-.0666292{col 67}{space 3} -.042938
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-.0017144{col 26}{space 2} .0065835{col 37}{space 1}   -0.26{col 46}{space 3}0.795{col 54}{space 4} -.014618{col 67}{space 3} .0111892
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .4084287{col 26}{space 2} .0144728{col 37}{space 1}   28.22{col 46}{space 3}0.000{col 54}{space 4} .3800623{col 67}{space 3} .4367951
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. reg worked4pay morethan2 mom_age mom_ageat1st boy1 boy2 black hispanic other_race if pernum== sploc[_n-1] & serial== serial[_n-1] & top3rd==1 & marst==1
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   104,500
+{txt}{hline 13}{c +}{hline 34}   F(8, 104491)    = {res}   598.85
+{txt}       Model {c |} {res} 1118.78067         8  139.847584   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 24401.4107   104,491  .233526435   {txt}R-squared       ={res}    0.0438
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0438
+{txt}       Total {c |} {res} 25520.1914   104,499  .244214695   {txt}Root MSE        =   {res} .48325
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-.1610339{col 26}{space 2}  .003243{col 37}{space 1}  -49.66{col 46}{space 3}0.000{col 54}{space 4}-.1673902{col 67}{space 3}-.1546776
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0237285{col 26}{space 2} .0005809{col 37}{space 1}   40.85{col 46}{space 3}0.000{col 54}{space 4}   .02259{col 67}{space 3}  .024867
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0214608{col 26}{space 2} .0004767{col 37}{space 1}  -45.02{col 46}{space 3}0.000{col 54}{space 4}-.0223952{col 67}{space 3}-.0205264
+{txt}{space 8}boy1 {c |}{col 14}{res}{space 2}-.0057898{col 26}{space 2} .0029909{col 37}{space 1}   -1.94{col 46}{space 3}0.053{col 54}{space 4}-.0116519{col 67}{space 3} .0000723
+{txt}{space 8}boy2 {c |}{col 14}{res}{space 2} -.000554{col 26}{space 2} .0029911{col 37}{space 1}   -0.19{col 46}{space 3}0.853{col 54}{space 4}-.0064165{col 67}{space 3} .0053084
+{txt}{space 7}black {c |}{col 14}{res}{space 2} .1925473{col 26}{space 2} .0086343{col 37}{space 1}   22.30{col 46}{space 3}0.000{col 54}{space 4} .1756241{col 67}{space 3} .2094704
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2} .0065716{col 26}{space 2}  .007059{col 37}{space 1}    0.93{col 46}{space 3}0.352{col 54}{space 4}-.0072639{col 67}{space 3} .0204071
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}  .002733{col 26}{space 2} .0071813{col 37}{space 1}    0.38{col 46}{space 3}0.704{col 54}{space 4}-.0113423{col 67}{space 3} .0168082
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .3783945{col 26}{space 2} .0175452{col 37}{space 1}   21.57{col 46}{space 3}0.000{col 54}{space 4} .3440062{col 67}{space 3} .4127828
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *2SLS: worked for pay 
+. 
+. ivregress 2sls worked4pay (morethan2=samesex1n2) mom_age mom_ageat1st black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & bottom3rd==1 & marst==1, robust 
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   109,798
+{txt}{col 1}{col 51}Wald chi2({res}6{txt}){col 67}= {res}   1907.54
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0371
+{txt}{col 51}Root MSE{col 67}=    {res} .47859
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-.1466441{col 26}{space 2} .0376395{col 37}{space 1}   -3.90{col 46}{space 3}0.000{col 54}{space 4}-.2204161{col 67}{space 3}-.0728721
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0141157{col 26}{space 2} .0011674{col 37}{space 1}   12.09{col 46}{space 3}0.000{col 54}{space 4} .0118277{col 67}{space 3} .0164038
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0121705{col 26}{space 2} .0016875{col 37}{space 1}   -7.21{col 46}{space 3}0.000{col 54}{space 4}-.0154779{col 67}{space 3}-.0088632
+{txt}{space 7}black {c |}{col 14}{res}{space 2} .1332339{col 26}{space 2} .0053767{col 37}{space 1}   24.78{col 46}{space 3}0.000{col 54}{space 4} .1226958{col 67}{space 3} .1437721
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-.0540199{col 26}{space 2} .0058616{col 37}{space 1}   -9.22{col 46}{space 3}0.000{col 54}{space 4}-.0655084{col 67}{space 3}-.0425314
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-.0355161{col 26}{space 2} .0058753{col 37}{space 1}   -6.04{col 46}{space 3}0.000{col 54}{space 4}-.0470314{col 67}{space 3}-.0240007
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .5070491{col 26}{space 2} .0210196{col 37}{space 1}   24.12{col 46}{space 3}0.000{col 54}{space 4} .4658515{col 67}{space 3} .5482468
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}mom_age mom_ageat1st black hispanic other_race samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls worked4pay (morethan2=samesex1n2) mom_age mom_ageat1st black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & middle3rd==1 & marst==1, robust 
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   100,674
+{txt}{col 1}{col 51}Wald chi2({res}6{txt}){col 67}= {res}   1862.27
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0357
+{txt}{col 51}Root MSE{col 67}=    {res} .45518
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-.1684681{col 26}{space 2} .0354464{col 37}{space 1}   -4.75{col 46}{space 3}0.000{col 54}{space 4}-.2379417{col 67}{space 3}-.0989944
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0194746{col 26}{space 2}  .001026{col 37}{space 1}   18.98{col 46}{space 3}0.000{col 54}{space 4} .0174637{col 67}{space 3} .0214854
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0122718{col 26}{space 2} .0014223{col 37}{space 1}   -8.63{col 46}{space 3}0.000{col 54}{space 4}-.0150594{col 67}{space 3}-.0094841
+{txt}{space 7}black {c |}{col 14}{res}{space 2} .1291185{col 26}{space 2} .0054506{col 37}{space 1}   23.69{col 46}{space 3}0.000{col 54}{space 4} .1184355{col 67}{space 3} .1398014
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-.0526086{col 26}{space 2} .0069779{col 37}{space 1}   -7.54{col 46}{space 3}0.000{col 54}{space 4}-.0662851{col 67}{space 3}-.0389322
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-.0009634{col 26}{space 2} .0068359{col 37}{space 1}   -0.14{col 46}{space 3}0.888{col 54}{space 4}-.0143615{col 67}{space 3} .0124346
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .4166313{col 26}{space 2} .0198934{col 37}{space 1}   20.94{col 46}{space 3}0.000{col 54}{space 4} .3776409{col 67}{space 3} .4556217
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}mom_age mom_ageat1st black hispanic other_race samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls worked4pay (morethan2=samesex1n2) mom_age mom_ageat1st black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & top3rd==1 & marst==1, robust
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   104,500
+{txt}{col 1}{col 51}Wald chi2({res}6{txt}){col 67}= {res}   2638.87
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0392
+{txt}{col 51}Root MSE{col 67}=    {res}  .4844
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  worked4pay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-.0882974{col 26}{space 2}  .037079{col 37}{space 1}   -2.38{col 46}{space 3}0.017{col 54}{space 4} -.160971{col 67}{space 3}-.0156238
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} .0217627{col 26}{space 2} .0011526{col 37}{space 1}   18.88{col 46}{space 3}0.000{col 54}{space 4} .0195036{col 67}{space 3} .0240218
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.0188366{col 26}{space 2} .0014154{col 37}{space 1}  -13.31{col 46}{space 3}0.000{col 54}{space 4}-.0216108{col 67}{space 3}-.0160624
+{txt}{space 7}black {c |}{col 14}{res}{space 2}  .194472{col 26}{space 2} .0073738{col 37}{space 1}   26.37{col 46}{space 3}0.000{col 54}{space 4} .1800196{col 67}{space 3} .2089243
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2} .0034759{col 26}{space 2} .0072857{col 37}{space 1}    0.48{col 46}{space 3}0.633{col 54}{space 4}-.0108038{col 67}{space 3} .0177557
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2} .0047288{col 26}{space 2} .0073493{col 37}{space 1}    0.64{col 46}{space 3}0.520{col 54}{space 4}-.0096756{col 67}{space 3} .0191333
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .3508174{col 26}{space 2}  .021597{col 37}{space 1}   16.24{col 46}{space 3}0.000{col 54}{space 4} .3084881{col 67}{space 3} .3931467
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}mom_age mom_ageat1st black hispanic other_race samesex1n2{p_end}
+
+{com}. 
+. 
+. *Mean of dependent variable: weeks/year
+. 
+. sum wkswork1 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 & bottom3rd ==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}wkswork1 {c |}{res}    109,798    25.99893    22.77108          0         52
+{txt}
+{com}. 
+. sum wkswork1 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 & middle3rd ==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}wkswork1 {c |}{res}    100,674    29.80617    22.41155          0         52
+{txt}
+{com}. 
+. sum wkswork1 if twomore_g1==1 & pernum== sploc[_n-1] & serial== serial[_n-1] & marst==1 & top3rd ==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}wkswork1 {c |}{res}    104,500    24.09377    22.79672          0         52
+{txt}
+{com}. 
+. *OLS: weeks/year
+. 
+. reg wkswork1 morethan2 mom_age mom_ageat1st boy1 boy2 black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & bottom3rd==1 & marst==1
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   109,798
+{txt}{hline 13}{c +}{hline 34}   F(8, 109789)    = {res}   947.13
+{txt}       Model {c |} {res} 3675485.09         8  459435.636   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 53256690.8   109,789   485.08221   {txt}R-squared       ={res}    0.0646
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0645
+{txt}       Total {c |} {res} 56932175.9   109,797  518.522144   {txt}Root MSE        =   {res} 22.025
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-8.049892{col 26}{space 2} .1415904{col 37}{space 1}  -56.85{col 46}{space 3}0.000{col 54}{space 4}-8.327407{col 67}{space 3}-7.772377
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} 1.202014{col 26}{space 2} .0206019{col 37}{space 1}   58.34{col 46}{space 3}0.000{col 54}{space 4} 1.161635{col 67}{space 3} 1.242394
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.4603869{col 26}{space 2} .0229728{col 37}{space 1}  -20.04{col 46}{space 3}0.000{col 54}{space 4}-.5054133{col 67}{space 3}-.4153605
+{txt}{space 8}boy1 {c |}{col 14}{res}{space 2} .0509337{col 26}{space 2}  .132998{col 37}{space 1}    0.38{col 46}{space 3}0.702{col 54}{space 4}-.2097405{col 67}{space 3} .3116079
+{txt}{space 8}boy2 {c |}{col 14}{res}{space 2} .2904422{col 26}{space 2}  .133042{col 37}{space 1}    2.18{col 46}{space 3}0.029{col 54}{space 4} .0296818{col 67}{space 3} .5512026
+{txt}{space 7}black {c |}{col 14}{res}{space 2} 4.418489{col 26}{space 2} .2525956{col 37}{space 1}   17.49{col 46}{space 3}0.000{col 54}{space 4} 3.923405{col 67}{space 3} 4.913572
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-4.403859{col 26}{space 2} .2187757{col 37}{space 1}  -20.13{col 46}{space 3}0.000{col 54}{space 4}-4.832656{col 67}{space 3}-3.975062
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-2.053758{col 26}{space 2} .2405122{col 37}{space 1}   -8.54{col 46}{space 3}0.000{col 54}{space 4}-2.525158{col 67}{space 3}-1.582357
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.460097{col 26}{space 2} .6092978{col 37}{space 1}    5.68{col 46}{space 3}0.000{col 54}{space 4} 2.265882{col 67}{space 3} 4.654312
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. reg wkswork1 morethan2 mom_age mom_ageat1st boy1 boy2 black hispanic other_race if pernum== sploc[_n-1] & serial== serial[_n-1] & middle3rd==1 & marst==1
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   100,674
+{txt}{hline 13}{c +}{hline 34}   F(8, 100665)    = {res}   774.04
+{txt}       Model {c |} {res} 2930252.12         8  366281.515   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 47635539.4   100,665  473.208557   {txt}R-squared       ={res}    0.0579
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0579
+{txt}       Total {c |} {res} 50565791.5   100,673  502.277587   {txt}Root MSE        =   {res} 21.753
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-7.907644{col 26}{space 2} .1492681{col 37}{space 1}  -52.98{col 46}{space 3}0.000{col 54}{space 4}-8.200207{col 67}{space 3} -7.61508
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} 1.323712{col 26}{space 2} .0228994{col 37}{space 1}   57.81{col 46}{space 3}0.000{col 54}{space 4} 1.278829{col 67}{space 3} 1.368594
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2} -.528111{col 26}{space 2} .0232459{col 37}{space 1}  -22.72{col 46}{space 3}0.000{col 54}{space 4}-.5736726{col 67}{space 3}-.4825494
+{txt}{space 8}boy1 {c |}{col 14}{res}{space 2}-.1651175{col 26}{space 2}  .137184{col 37}{space 1}   -1.20{col 46}{space 3}0.229{col 54}{space 4}-.4339964{col 67}{space 3} .1037614
+{txt}{space 8}boy2 {c |}{col 14}{res}{space 2}-.1371069{col 26}{space 2} .1371888{col 37}{space 1}   -1.00{col 46}{space 3}0.318{col 54}{space 4}-.4059951{col 67}{space 3} .1317814
+{txt}{space 7}black {c |}{col 14}{res}{space 2}  5.72693{col 26}{space 2} .3002334{col 37}{space 1}   19.07{col 46}{space 3}0.000{col 54}{space 4} 5.138476{col 67}{space 3} 6.315384
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-3.530184{col 26}{space 2} .2889146{col 37}{space 1}  -12.22{col 46}{space 3}0.000{col 54}{space 4}-4.096453{col 67}{space 3}-2.963915
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-.7853193{col 26}{space 2} .3147198{col 37}{space 1}   -2.50{col 46}{space 3}0.013{col 54}{space 4}-1.402166{col 67}{space 3}-.1684723
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 3.873928{col 26}{space 2}  .691858{col 37}{space 1}    5.60{col 46}{space 3}0.000{col 54}{space 4} 2.517895{col 67}{space 3} 5.229961
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. reg wkswork1 morethan2 mom_age mom_ageat1st boy1 boy2 black hispanic other_race if pernum== sploc[_n-1] & serial== serial[_n-1] & top3rd==1 & marst==1
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}   104,500
+{txt}{hline 13}{c +}{hline 34}   F(8, 104491)    = {res}   720.32
+{txt}       Model {c |} {res} 2838437.84         8  354804.731   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 51468702.3   104,491  492.565889   {txt}R-squared       ={res}    0.0523
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.0522
+{txt}       Total {c |} {res} 54307140.1   104,499  519.690525   {txt}Root MSE        =   {res} 22.194
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-7.966635{col 26}{space 2} .1489416{col 37}{space 1}  -53.49{col 46}{space 3}0.000{col 54}{space 4}-8.258559{col 67}{space 3}-7.674712
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} 1.352461{col 26}{space 2} .0266783{col 37}{space 1}   50.70{col 46}{space 3}0.000{col 54}{space 4} 1.300172{col 67}{space 3}  1.40475
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.9773023{col 26}{space 2} .0218944{col 37}{space 1}  -44.64{col 46}{space 3}0.000{col 54}{space 4}-1.020215{col 67}{space 3}-.9343895
+{txt}{space 8}boy1 {c |}{col 14}{res}{space 2}-.3006654{col 26}{space 2} .1373615{col 37}{space 1}   -2.19{col 46}{space 3}0.029{col 54}{space 4}-.5698922{col 67}{space 3}-.0314386
+{txt}{space 8}boy2 {c |}{col 14}{res}{space 2}-.1273189{col 26}{space 2} .1373698{col 37}{space 1}   -0.93{col 46}{space 3}0.354{col 54}{space 4}-.3965618{col 67}{space 3} .1419241
+{txt}{space 7}black {c |}{col 14}{res}{space 2} 9.365165{col 26}{space 2} .3965447{col 37}{space 1}   23.62{col 46}{space 3}0.000{col 54}{space 4} 8.587942{col 67}{space 3} 10.14239
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2} .3482388{col 26}{space 2} .3241953{col 37}{space 1}    1.07{col 46}{space 3}0.283{col 54}{space 4}-.2871796{col 67}{space 3} .9836572
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2} .6932402{col 26}{space 2} .3298131{col 37}{space 1}    2.10{col 46}{space 3}0.036{col 54}{space 4} .0468108{col 67}{space 3}  1.33967
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 6.738219{col 26}{space 2} .8057898{col 37}{space 1}    8.36{col 46}{space 3}0.000{col 54}{space 4} 5.158882{col 67}{space 3} 8.317556
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *2SLS: weeks/year
+. 
+. ivregress 2sls wkswork1 (morethan2=samesex1n2) mom_age mom_ageat1st black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & bottom3rd==1 & marst==1, robust 
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   109,798
+{txt}{col 1}{col 51}Wald chi2({res}6{txt}){col 67}= {res}   4642.18
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0623
+{txt}{col 51}Root MSE{col 67}=    {res} 22.051
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-5.746959{col 26}{space 2} 1.734065{col 37}{space 1}   -3.31{col 46}{space 3}0.001{col 54}{space 4}-9.145663{col 67}{space 3}-2.348255
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} 1.136363{col 26}{space 2}  .053586{col 37}{space 1}   21.21{col 46}{space 3}0.000{col 54}{space 4} 1.031337{col 67}{space 3}  1.24139
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.3614695{col 26}{space 2} .0777977{col 37}{space 1}   -4.65{col 46}{space 3}0.000{col 54}{space 4}-.5139502{col 67}{space 3}-.2089888
+{txt}{space 7}black {c |}{col 14}{res}{space 2} 4.291688{col 26}{space 2} .2635781{col 37}{space 1}   16.28{col 46}{space 3}0.000{col 54}{space 4} 3.775085{col 67}{space 3} 4.808292
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-4.602395{col 26}{space 2}  .263042{col 37}{space 1}  -17.50{col 46}{space 3}0.000{col 54}{space 4}-5.117948{col 67}{space 3}-4.086842
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-2.195571{col 26}{space 2} .2631615{col 37}{space 1}   -8.34{col 46}{space 3}0.000{col 54}{space 4}-2.711358{col 67}{space 3}-1.679784
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 2.609626{col 26}{space 2} .9553681{col 37}{space 1}    2.73{col 46}{space 3}0.006{col 54}{space 4} .7371388{col 67}{space 3} 4.482113
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}mom_age mom_ageat1st black hispanic other_race samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls wkswork1 (morethan2=samesex1n2) mom_age mom_ageat1st black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & middle3rd==1 & marst==1, robust
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   100,674
+{txt}{col 1}{col 51}Wald chi2({res}6{txt}){col 67}= {res}   3578.06
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0570
+{txt}{col 51}Root MSE{col 67}=    {res} 21.764
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-9.430943{col 26}{space 2} 1.694379{col 37}{space 1}   -5.57{col 46}{space 3}0.000{col 54}{space 4}-12.75186{col 67}{space 3}-6.110022
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} 1.362811{col 26}{space 2} .0487826{col 37}{space 1}   27.94{col 46}{space 3}0.000{col 54}{space 4} 1.267199{col 67}{space 3} 1.458423
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2}-.5861076{col 26}{space 2} .0680398{col 37}{space 1}   -8.61{col 46}{space 3}0.000{col 54}{space 4}-.7194631{col 67}{space 3}-.4527522
+{txt}{space 7}black {c |}{col 14}{res}{space 2} 5.772255{col 26}{space 2} .2824232{col 37}{space 1}   20.44{col 46}{space 3}0.000{col 54}{space 4} 5.218716{col 67}{space 3} 6.325795
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2}-3.398934{col 26}{space 2} .3289644{col 37}{space 1}  -10.33{col 46}{space 3}0.000{col 54}{space 4}-4.043692{col 67}{space 3}-2.754176
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2}-.7396752{col 26}{space 2} .3253698{col 37}{space 1}   -2.27{col 46}{space 3}0.023{col 54}{space 4}-1.377388{col 67}{space 3}-.1019621
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}  4.30638{col 26}{space 2} .9364034{col 37}{space 1}    4.60{col 46}{space 3}0.000{col 54}{space 4} 2.471063{col 67}{space 3} 6.141697
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}mom_age mom_ageat1st black hispanic other_race samesex1n2{p_end}
+
+{com}. 
+. ivregress 2sls wkswork1 (morethan2=samesex1n2) mom_age mom_ageat1st black hispanic other_race  if pernum== sploc[_n-1] & serial== serial[_n-1] & top3rd==1 & marst==1, robust
+{res}
+{txt}{col 1}Instrumental variables (2SLS) regression{col 51}Number of obs{col 67}= {res}   104,500
+{txt}{col 1}{col 51}Wald chi2({res}6{txt}){col 67}= {res}   3067.51
+{txt}{col 1}{col 51}Prob > chi2{col 67}= {res}    0.0000
+{txt}{col 1}{col 51}R-squared{col 67}= {res}    0.0429
+{txt}{col 51}Root MSE{col 67}=    {res} 22.302
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}    wkswork1{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 3}morethan2 {c |}{col 14}{res}{space 2}-3.208381{col 26}{space 2} 1.707108{col 37}{space 1}   -1.88{col 46}{space 3}0.060{col 54}{space 4}-6.554251{col 67}{space 3} .1374885
+{txt}{space 5}mom_age {c |}{col 14}{res}{space 2} 1.223874{col 26}{space 2} .0528742{col 37}{space 1}   23.15{col 46}{space 3}0.000{col 54}{space 4} 1.120242{col 67}{space 3} 1.327505
+{txt}mom_ageat1st {c |}{col 14}{res}{space 2} -.805668{col 26}{space 2} .0652901{col 37}{space 1}  -12.34{col 46}{space 3}0.000{col 54}{space 4}-.9336344{col 67}{space 3}-.6777017
+{txt}{space 7}black {c |}{col 14}{res}{space 2}  9.49187{col 26}{space 2} .3766473{col 37}{space 1}   25.20{col 46}{space 3}0.000{col 54}{space 4} 8.753655{col 67}{space 3} 10.23008
+{txt}{space 4}hispanic {c |}{col 14}{res}{space 2} .1466567{col 26}{space 2} .3389817{col 37}{space 1}    0.43{col 46}{space 3}0.665{col 54}{space 4}-.5177353{col 67}{space 3} .8110487
+{txt}{space 2}other_race {c |}{col 14}{res}{space 2} .8245752{col 26}{space 2} .3445666{col 37}{space 1}    2.39{col 46}{space 3}0.017{col 54}{space 4}  .149237{col 67}{space 3} 1.499913
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}  4.92945{col 26}{space 2} .9720615{col 37}{space 1}    5.07{col 46}{space 3}0.000{col 54}{space 4} 3.024245{col 67}{space 3} 6.834656
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 15 100}Instrumented:{space 2}morethan2{p_end}
+{p 0 15 100}Instruments:{space 3}mom_age mom_ageat1st black hispanic other_race samesex1n2{p_end}
+
+{com}. 
+. 
+. 
+. log close 
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}\\stustocoiscifs1.student.vuw.ac.nz\users$\piosantris\Documents\RP_433_logfile.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}27 May 2021, 15:15:46
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
