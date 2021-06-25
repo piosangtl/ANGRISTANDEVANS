@@ -1,5 +1,5 @@
 # ANGRISTANDEVANS
-Replication Codes for Angrist and Evans (1998)
+Replication Code for Angrist and Evans (1998)
 
 This do-file code covers 1990 Tables 1,2,3,5 and 10 of Angrist and Evans (1998). Download the 1990 census data from IPUMS-USA.
 
